@@ -52,10 +52,9 @@ let db={
 
 let session=null;
 
-// Carga inicial desde Firebase Firestore con datos por defecto si está vacío
-async function initCloudData(){
-  try {
-    const docSnap = await firestore.collection('system').doc('main_data').get();
+// Sincronización automática en tiempo real con Firebase Firestore
+function initCloudData(){
+  firestore.collection('system').doc('main_data').onSnapshot((docSnap) => {
     if(docSnap.exists){
       const remote = docSnap.data();
       if(remote.students) db.students = remote.students;
@@ -65,17 +64,26 @@ async function initCloudData(){
       if(remote.tutors) db.tutors = remote.tutors;
       if(remote.settings) db.settings = remote.settings;
       if(remote.audit) db.audit = remote.audit;
+      
+      // Actualiza la pantalla de forma automática si ya hay una sesión iniciada
+      if(session){
+        if(session.role === 'student') renderStudent();
+        else if(session.role === 'tutor') renderTutor();
+      } else {
+        login();
+      }
     } else {
-      // Datos de semilla iniciales si la base de datos está vacía en la nube
+      // Datos de semilla iniciales si la nube está vacía
       db.students = [{id:'STU-001',name:'Ana',surname:'Pérez',career:'Criminología',organization:'',referent:'',active:true,createdAt:'2026-08-19'}];
-      db.practices = [{id:'p1',studentId:'STU-001',date:'2026-08-18',start:'09:00',end:'14:00',hours:5,activity:'Investigación',notes:'Revisión'}];
-      db.classes = [{id:'c1',studentId:'STU-001',date:'2026-08-19',hours:2,status:'Presente'}];
-      await saveData();
+      db.practices = [];
+      db.classes = [];
+      db.improvements = [];
+      saveData();
+      login();
     }
-  } catch(err){
-    console.error("Error conectando con Firestore:", err);
-  }
-  login();
+  }, (err) => {
+    console.error("Error al escuchar Firestore en tiempo real:", err);
+  });
 }
 
 async function saveData(){
@@ -127,7 +135,7 @@ function navTutor(tab){session.tab=tab;renderTutor()}
 
 function renderStudent(){const st=db.students.find(x=>x.id===session.studentId);if(!st||!st.active){logout();return}const h=hoursFor(st.id),t=h.practice+h.classes,p=pct(t);let page='';if(session.tab==='practice')page=studentPractice(st);else if(session.tab==='class')page=studentClass(st);else if(session.tab==='history')page=studentHistory(st);else if(session.tab==='planilla')page=studentPlanilla(st);else if(session.tab==='improvement')page=studentImprovement(st);else page=studentHome(st,h,t,p);document.getElementById('app').innerHTML=layout(`<div class="hero"><div><div class="eyebrow">Panel del estudiante</div><div class="title">Hola, ${esc(st.name)}.</div><div class="muted">${esc(st.career||'Carrera')} · ${esc(db.settings.institution||'')}</div></div><div class="hero-right panel"><div class="progress-wrap"><div class="ring" style="--p:${p}"><span>${p.toFixed(0)}%</span></div><div><div class="eyebrow">Progreso total</div><strong style="font-size:22px">${fmt(t)} / ${targetHours} h</strong><div class="mini">Restan ${fmt(Math.max(0,targetHours-t))}</div></div></div></div></div><div class="nav-tabs"><button class="btn ${session.tab==='home'?'active':''}" onclick="navStudent('home')">Inicio</button><button class="btn ${session.tab==='practice'?'active':''}" onclick="navStudent('practice')">Registrar práctica</button><button class="btn ${session.tab==='class'?'active':''}" onclick="navStudent('class')">Asistencia a clase</button><button class="btn ${session.tab==='history'?'active':''}" onclick="navStudent('history')">Mi historial</button><button class="btn ${session.tab==='planilla'?'active':''}" onclick="navStudent('planilla')">Mi planilla</button><button class="btn ${session.tab==='improvement'?'active':''}" onclick="navStudent('improvement')">Mejora mensual</button></div>${page}`,'ESTUDIANTE · '+studentName(st))}
 
-function studentHome(st,h,t,p){const [cl,tx]=statusFor(t);const events=[...db.practices.filter(x=>x.studentId===st.id).map(x=>({...x,type:'Práctica',sort:x.date})),...db.classes.filter(x=>x.studentId===st.id).map(x=>({...x,type:'Clase',sort:x.date}))].sort((a,b)=>b.sort.localeCompare(a.sort)).slice(0,6);return `<div class="grid grid-4"><div class="panel metric accent-cyan"><div class="label">Práctica</div><div class="value">${fmt(h.practice)}</div><div class="sub">Horas profesionales</div></div><div class="panel metric accent-violet"><div class="label">Clases</div><div class="value">${fmt(h.classes)}</div><div class="sub">Horas académicas</div></div><div class="panel metric accent-green"><div class="label">Total</div><div class="value">${fmt(t)}</div><div class="sub">Objetivo: ${targetHours} h</div></div><div class="panel metric accent-warn"><div class="label">Estado</div><div class="value" style="font-size:20px"><span class="status ${cl}"><span class="dot"></span>${tx}</span></div><div class="sub">${p.toFixed(1)}% completado</div></div></div><div class="grid grid-2" style="margin-top:16px"><section class="panel"><div class="section-head"><h2>Actividad reciente</h2><button class="btn btn-small" onclick="navStudent('history')">Ver todo</button></div>${events.length?`<div class="timeline">${events.map(e=>`<div class="event"><div class="event-date">${fmtDate(e.date)}</div><div class="event-card"><div class="event-top"><strong>${e.type}</strong><span class="tag">+${fmt(e.hours)}</span></div><div class="mini">${e.activity?esc(e.activity):'Asistencia registrada'}</div></div></div>`).join('')}</div>`:'<div class="empty">Todavía no hay movimientos.</div>'}</section><section class="panel"><div class="section-head"><h2>Resumen de progreso</h2><span class="badge">Sincronizado en la nube</span></div><div class="kpi-line"><span>Horas acumuladas</span><strong>${fmt(t)}</strong></div><div class="bar"><div style="width:${p}%"></div></div><div style="height:18px"></div><div class="notice">Cada jornada que guardás se almacena en la nube de Firebase para que tu tutor pueda verla al instante.</div></section></div>`}
+function studentHome(st,h,t,p){const [cl,tx]=statusFor(t);const events=[...db.practices.filter(x=>x.studentId===st.id).map(x=>({...x,type:'Práctica',sort:x.date})),...db.classes.filter(x=>x.studentId===st.id).map(x=>({...x,type:'Clase',sort:x.date}))].sort((a,b)=>b.sort.localeCompare(a.sort)).slice(0,6);return `<div class="grid grid-4"><div class="panel metric accent-cyan"><div class="label">Práctica</div><div class="value">${fmt(h.practice)}</div><div class="sub">Horas profesionales</div></div><div class="panel metric accent-violet"><div class="label">Clases</div><div class="value">${fmt(h.classes)}</div><div class="sub">Horas académicas</div></div><div class="panel metric accent-green"><div class="label">Total</div><div class="value">${fmt(t)}</div><div class="sub">Objetivo: ${targetHours} h</div></div><div class="panel metric accent-warn"><div class="label">Estado</div><div class="value" style="font-size:20px"><span class="status ${cl}"><span class="dot"></span>${tx}</span></div><div class="sub">${p.toFixed(1)}% completado</div></div></div><div class="grid grid-2" style="margin-top:16px"><section class="panel"><div class="section-head"><h2>Actividad reciente</h2><button class="btn btn-small" onclick="navStudent('history')">Ver todo</button></div>${events.length?`<div class="timeline">${events.map(e=>`<div class="event"><div class="event-date">${fmtDate(e.date)}</div><div class="event-card"><div class="event-top"><strong>${e.type}</strong><span class="tag">+${fmt(e.hours)}</span></div><div class="mini">${e.activity?esc(e.activity):'Asistencia registrada'}</div></div></div>`).join('')}</div>`:'<div class="empty">Todavía no hay movimientos.</div>'}</section><section class="panel"><div class="section-head"><h2>Resumen de progreso</h2><span class="badge">Sincronizado en la nube</span></div><div class="kpi-line"><span>Horas acumuladas</span><strong>${fmt(t)}</strong></div><div class="bar"><div style="width:${p}%"></div></div><div style="height:18px"></div><div class="notice">Cada jornada que guardás se sincroniza al instante en la nube de Firebase.</div></section></div>`}
 
 function studentPractice(st){return `<div class="grid grid-2"><section class="panel"><div class="section-head"><h2>Registrar jornada práctica</h2><span class="badge">Máx. ${weekMax} h/semana</span></div><form class="form" onsubmit="savePractice(event)"><div class="row"><div class="field"><label>Fecha</label><input type="date" id="pd" value="${today()}" required></div><div class="field"><label>Actividad</label><input id="pa" placeholder="Ej. investigación, campo, análisis..." required></div></div><div class="row"><div class="field"><label>Hora de inicio</label><input type="time" id="ps" required></div><div class="field"><label>Hora de finalización</label><input type="time" id="pe" required></div></div><div class="field"><label>Observaciones</label><textarea id="pn" placeholder="Opcional"></textarea></div><button class="btn btn-primary">Guardar en la nube + calcular horas</button></form></section><section class="panel"><div class="section-head"><h2>Validaciones</h2></div><div class="notice">El sistema calcula automáticamente la duración y asigna las horas correspondientes.</div><div style="height:10px"></div><div class="warnbox">La práctica se realiza de lunes a viernes, con un límite máximo de ${weekMax} horas semanales.</div></section></div>`}
 
@@ -442,7 +450,7 @@ async function audit(action,targetId,detail){
   if(db.audit.length>100)db.audit.pop();
 }
 
-// Inicializar la aplicación conectando a Firebase
+// Inicializar la conexión en tiempo real con Firebase
 initCloudData();
 </script>
 </body>
