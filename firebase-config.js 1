@@ -1,0 +1,36 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    getDoc, 
+    collection, 
+    addDoc, 
+    query, 
+    where, 
+    getDocs 
+} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+// Reemplazá los datos entre comillas con las claves reales de tu Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyD6263bvzU2AXX6iGVEA4kQbOw7c7UUoWc",
+    authDomain: "practicas-profesionales-us21.firebaseapp.com",
+    projectId: "practicas-profesionales-us21",
+    storageBucket: "practicas-profesionales-us21.firebasestorage.app",
+    messagingSenderId: "113244819002",
+    appId: "1:113244819002:web:d5528115e8ab1a2646ef03"
+};
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+
+export { 
+    doc, 
+    setDoc, 
+    getDoc, 
+    collection, 
+    addDoc, 
+    query, 
+    where, 
+    getDocs 
+};
