@@ -3,165 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prácticas Profesionales | Universidad Siglo 21</title>
-    <!-- Tailwind CSS para diseño moderno -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Gestión de Prácticas Profesionales - Acceso</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1a252f; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card-login { background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card-login h2 { margin-top: 0; color: #2c3e50; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: bold; color: #34495e; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn-main:hover { background: #219150; }
+    </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body>
 
-    <!-- Contenedor Principal -->
-    <div class="w-full max-w-md space-y-6">
-
-        <!-- Tarjeta 1: Registro de Asistencia (Vista de Alumnas) -->
-        <div class="bg-white p-8 rounded-2xl shadow-lg border border-slate-200">
-            <div class="text-center mb-6">
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Ciclo Académico</span>
-                <h1 class="text-2xl font-bold text-slate-800 mt-2">Registro de Asistencia</h1>
-                <p class="text-xs text-slate-500 mt-1">Completá tus datos para registrar la presencia</p>
-            </div>
-            
-            <!-- Casillero con Autocompletado -->
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Nombre y Apellido</label>
-                <input list="lista-alumnas" id="nombre" class="w-full p-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition" placeholder="Buscá o escribí tu nombre...">
-                <datalist id="lista-alumnas"></datalist>
-            </div>
-
-            <!-- Casillero de la Fecha -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Fecha</label>
-                <input type="date" id="fecha" class="w-full p-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
-            </div>
-
-            <!-- Botón de Guardar -->
-            <button onclick="guardarAsistencia()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition duration-200">
-                Guardar Asistencia
-            </button>
-
-            <!-- Mensaje de Estado -->
-            <div id="mensaje" class="mt-4 text-center font-medium text-sm hidden p-3 rounded-xl"></div>
+<div class="card-login">
+    <h2>Ingreso a Prácticas</h2>
+    <p style="text-align: center; color: #7f8c8d; font-size: 13px;">Ingresá tu nombre y apellido para acceder a tu panel.</p>
+    
+    <form id="auth-form">
+        <div class="form-group">
+            <label>Nombre y Apellido</label>
+            <input type="text" id="nombreCompleto" required placeholder="Ej: Agostina Vachino">
         </div>
 
-        <!-- Tarjeta 2: Panel de Administración (Exclusivo para vos) -->
-        <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl border border-slate-800">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400">Panel de Gestión</h2>
-                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            </div>
-            
-            <p class="text-xs text-slate-400 mb-3">Agregá nuevas alumnas al sistema para que aparezcan automáticamente en la lista de búsqueda.</p>
-            
-            <div class="mb-3">
-                <input type="text" id="nuevoNombre" class="w-full p-3 bg-slate-800 border border-slate-700 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition placeholder-slate-500" placeholder="Nombre y Apellido nuevo...">
-            </div>
-
-            <button onclick="agregarAlumna()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white font-semibold py-2.5 px-4 rounded-xl transition duration-200 text-sm">
-                + Registrar Alumna
-            </button>
-
-            <div id="mensajeAdmin" class="mt-3 text-center font-medium text-sm hidden p-2 rounded-lg"></div>
+        <div class="form-group">
+            <label>Carrera</label>
+            <select id="carrera">
+                <option value="Criminología y Seguridad">Criminología y Seguridad</option>
+                <option value="Abogacía">Abogacía</option>
+                <option value="Otra">Otra Carrera</option>
+            </select>
         </div>
 
-    </div>
+        <button type="submit" class="btn-main" id="btn-submit">Ingresar</button>
+    </form>
+</div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script type="module">
+    import { db, collection, query, where, getDocs, addDoc } from './firebase-config.js';
 
-    <script>
-        // Credenciales oficiales
-        const firebaseConfig = {
-          apiKey: "AIzaSyD6263bvzU2AXX6iGVEA4kQbOw7c7UUoWc",
-          authDomain: "practicas-profesionales-us21.firebaseapp.com",
-          projectId: "practicas-profesionales-us21",
-          storageBucket: "practicas-profesionales-us21.firebasestorage.app",
-          messagingSenderId: "113244819002",
-          appId: "1:113244819002:web:d5528115e8ab1a2646ef03"
-        };
+    const form = document.getElementById('auth-form');
+    const btnSubmit = document.getElementById('btn-submit');
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nombreInput = document.getElementById('nombreCompleto').value.trim();
+        const carreraInput = document.getElementById('carrera').value;
 
-        // Cargar fecha actual por defecto en el campo de fecha
-        document.getElementById('fecha').valueAsDate = new Date();
+        if (!nombreInput) {
+            alert("Por favor ingresá tu nombre y apellido.");
+            return;
+        }
 
-        // Cargar nombres actualizados desde la base de datos
-        function cargarNombres() {
-            const lista = document.getElementById("lista-alumnas");
-            lista.innerHTML = ""; 
-            db.collection("alumnas").get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    const datos = doc.data();
-                    if (datos.nombre) {
-                        const opcion = document.createElement("option");
-                        opcion.value = datos.nombre;
-                        lista.appendChild(opcion);
-                    }
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "Ingresando...";
+
+        try {
+            // Buscamos si ya existe alguien con ese Nombre y Apellido
+            const q = query(collection(db, "usuarios"), where("nombreCompleto", "==", nombreInput));
+            const snapshot = await getDocs(q);
+
+            let userId = "";
+            let userNombre = nombreInput;
+            let userCarrera = carreraInput;
+
+            if (!snapshot.empty) {
+                // Usuario existe
+                const userDoc = snapshot.docs[0];
+                userId = userDoc.id;
+                userCarrera = userDoc.data().carrera || carreraInput;
+            } else {
+                // Si no existe, lo creamos automáticamente
+                const nuevoUser = await addDoc(collection(db, "usuarios"), {
+                    nombreCompleto: nombreInput,
+                    carrera: carreraInput,
+                    rol: "estudiante"
                 });
-            });
-        }
-
-        cargarNombres();
-
-        // Guardar asistencia de forma concurrente y segura (.add en vez de .set)
-        function guardarAsistencia() {
-            const nombre = document.getElementById("nombre").value.trim();
-            const fecha = document.getElementById("fecha").value;
-            const cajaMensaje = document.getElementById("mensaje");
-
-            if (nombre === "" || fecha === "") {
-                cajaMensaje.innerText = "Por favor, completá todos los campos.";
-                cajaMensaje.className = "mt-4 text-center font-medium text-sm bg-rose-50 text-rose-700 border border-rose-200 block p-3 rounded-xl";
-                return;
+                userId = nuevoUser.id;
             }
 
-            cajaMensaje.innerText = "Registrando asistencia...";
-            cajaMensaje.className = "mt-4 text-center font-medium text-sm bg-sky-50 text-sky-700 border border-sky-200 block p-3 rounded-xl";
+            // Guardamos la sesión localmente
+            localStorage.setItem("usuario_id", userId);
+            localStorage.setItem("usuario_nombre", userNombre);
+            localStorage.setItem("usuario_carrera", userCarrera);
 
-            db.collection("asistencias").add({
-                nombre: nombre,
-                fecha: fecha,
-                registro_creado: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
-                cajaMensaje.innerText = "¡Asistencia guardada con éxito!";
-                cajaMensaje.className = "mt-4 text-center font-bold text-sm bg-emerald-50 text-emerald-700 border border-emerald-200 block p-3 rounded-xl";
-                document.getElementById("nombre").value = "";
-            })
-            .catch((error) => {
-                cajaMensaje.innerText = "Ocurrió un inconveniente al registrar.";
-                cajaMensaje.className = "mt-4 text-center font-medium text-sm bg-rose-50 text-rose-700 border border-rose-200 block p-3 rounded-xl";
-            });
+            window.location.href = "panel.html";
+
+        } catch (error) {
+            alert("Error al ingresar: " + error.message);
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "Ingresar";
         }
+    });
+</script>
 
-        // Agregar nueva alumna desde la herramienta
-        function agregarAlumna() {
-            const nuevoNombre = document.getElementById("nuevoNombre").value.trim();
-            const cajaAdmin = document.getElementById("mensajeAdmin");
-
-            if (nuevoNombre === "") {
-                cajaAdmin.innerText = "Ingresá un nombre y apellido válido.";
-                cajaAdmin.className = "mt-3 text-center font-medium text-xs bg-rose-900/50 text-rose-300 border border-rose-800 block p-2 rounded-lg";
-                return;
-            }
-
-            cajaAdmin.innerText = "Registrando en el sistema...";
-            cajaAdmin.className = "mt-3 text-center font-medium text-xs bg-sky-900/50 text-sky-300 border border-sky-800 block p-2 rounded-lg";
-
-            db.collection("alumnas").add({
-                nombre: nuevoNombre
-            })
-            .then(() => {
-                cajaAdmin.innerText = "¡Alumna agregada correctamente!";
-                cajaAdmin.className = "mt-3 text-center font-bold text-xs bg-emerald-900/50 text-emerald-300 border border-emerald-800 block p-2 rounded-lg";
-                document.getElementById("nuevoNombre").value = "";
-                cargarNombres(); // Actualiza la lista al instante
-            })
-            .catch((error) => {
-                cajaAdmin.innerText = "Error al registrar la alumna.";
-                cajaAdmin.className = "mt-3 text-center font-medium text-xs bg-rose-900/50 text-rose-300 border border-rose-800 block p-2 rounded-lg";
-            });
-        }
-    </script>
 </body>
 </html>
