@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Estudiante</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+        .topbar { background: #1a252f; color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
+        .topbar button { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .main { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .stat-card.verde { border-left-color: #2ecc71; }
+        .stat-card.rojo { border-left-color: #e74c3c; }
+        .stat-num { font-size: 24px; font-weight: bold; color: #2c3e50; }
+        .progress-bar { background: #eee; border-radius: 10px; height: 10px; width: 100%; margin: 8px 0; overflow: hidden; }
+        .progress-fill { background: #2ecc71; height: 100%; width: 0%; transition: width 0.3s; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+        .form-grid input, .form-grid select, .form-grid button { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .form-grid button { background: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; grid-column: 1 / -1; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { background: #f8f9fa; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div>
+        <h3 style="margin:0;">PRÁCTICAS PROFESIONALES</h3>
+        <small style="color:#bdc3c7;">GESTIÓN DIGITAL · NUBE FIREBASE · 250 HORAS</small>
+    </div>
+    <div>
+        <span id="user-display" style="margin-right: 15px;">ESTUDIANTE</span>
+        <button id="btn-logout">Salir</button>
+    </div>
+</div>
+
+<div class="main">
+    <div class="card">
+        <h2 id="saludo-alumno" style="margin-top:0; color:#2c3e50;">Hola...</h2>
+        <p id="carrera-alumno" style="color:#7f8c8d; margin:0;">Cargando...</p>
+    </div>
+
+    <div class="grid-stats">
+        <div class="stat-card verde">
+            <small>PROGRESO TOTAL</small>
+            <div class="stat-num" id="stat-porcentaje">0%</div>
+            <div class="progress-bar"><div class="progress-fill" id="fill-barra"></div></div>
+            <small id="stat-restantes">0 h / 250 h</small>
+        </div>
+        <div class="stat-card">
+            <small>PRÁCTICA</small>
+            <div class="stat-num" id="stat-practica">0 h</div>
+            <small>Horas profesionales</small>
+        </div>
+        <div class="stat-card">
+            <small>CLASES</small>
+            <div class="stat-num" id="stat-clases">0 h</div>
+            <small>Horas académicas</small>
+        </div>
+        <div class="stat-card rojo" id="card-estado">
+            <small>ESTADO</small>
+            <div class="stat-num" id="stat-estado">RIESGO</div>
+            <small id="stat-completado-txt">0.0% completado</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Registrar práctica / clase</h3>
+        <form id="form-cargar-horas" class="form-grid">
+            <select id="tipo-registro" required>
+                <option value="practica">Práctica Profesional</option>
+                <option value="clase">Asistencia a Clase</option>
+            </select>
+            <input type="date" id="fecha-registro" required>
+            <input type="number" id="cantidad-horas" step="0.5" min="0.5" placeholder="Horas (ej: 4)" required>
+            <input type="text" id="desc-registro" placeholder="Descripción breve de la actividad" style="grid-column: 1 / -1;" required>
+            <button type="submit" id="btn-guardar">Guardar horas en la nube</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Mi historial</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Horas</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-historial">
+                <tr><td colspan="4">Cargando movimientos...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module">
+    import { db, collection, addDoc, query, where, getDocs } from './firebase-config.js';
+
+    const userId = localStorage.getItem("usuario_id");
+    const userNombre = localStorage.getItem("usuario_nombre");
+    const userCarrera = localStorage.getItem("usuario_carrera");
+
+    if (!userId) {
+        window.location.href = "index.html";
+    } else {
+        document.getElementById('user-display').innerText = `ESTUDIANTE · ${userNombre}`;
+        document.getElementById('saludo-alumno').innerText = `Hola, ${userNombre}.`;
+        document.getElementById('carrera-alumno').innerText = `${userCarrera}`;
+        document.getElementById('fecha-registro').valueAsDate = new Date();
+        cargarHoras();
+    }
+
+    async function cargarHoras() {
+        const q = query(collection(db, "registros_horas"), where("id_estudiante", "==", userId));
+        const snapshot = await getDocs(q);
+
+        let practica = 0;
+        let clases = 0;
+        let html = "";
+
+        snapshot.forEach(d => {
+            const data = d.data();
+            const h = parseFloat(data.cantidad_horas) || 0;
+            if (data.tipo === "practica") practica += h;
+            if (data.tipo === "clase") clases += h;
+
+            html += `<tr>
+                <td>${data.fecha}</td>
+                <td>${data.tipo === 'practica' ? 'Práctica' : 'Clase'}</td>
+                <td><b>${h} h</b></td>
+                <td>${data.descripcion}</td>
+            </tr>`;
+        });
+
+        const total = practica + clases;
+        const pct = Math.min(100, ((total / 250) * 100)).toFixed(1);
+        const restan = Math.max(0, 250 - total);
+
+        document.getElementById('stat-practica').innerText = `${practica} h`;
+        document.getElementById('stat-clases').innerText = `${clases} h`;
+        document.getElementById('stat-porcentaje').innerText = `${pct}%`;
+        document.getElementById('fill-barra').style.width = `${pct}%`;
+        document.getElementById('stat-restantes').innerText = `${total} h / 250 h (Restan ${restan} h)`;
+        document.getElementById('stat-completado-txt').innerText = `${pct}% completado`;
+
+        const estadoTxt = document.getElementById('stat-estado');
+        if (total === 0) { estadoTxt.innerText = "RIESGO"; estadoTxt.style.color = "#e74c3c"; }
+        else if (total >= 250) { estadoTxt.innerText = "COMPLETADO"; estadoTxt.style.color = "#2ecc71"; }
+        else { estadoTxt.innerText = "EN PROCESO"; estadoTxt.style.color = "#f39c12"; }
+
+        document.getElementById('tabla-historial').innerHTML = html || `<tr><td colspan="4">Sin registros aún.</td></tr>`;
+    }
+
+    document.getElementById('form-cargar-horas').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-guardar');
+        btn.disabled = true;
+        btn.innerText = "Guardando...";
+
+        try {
+            await addDoc(collection(db, "registros_horas"), {
+                id_estudiante: userId,
+                tipo: document.getElementById('tipo-registro').value,
+                fecha: document.getElementById('fecha-registro').value,
+                cantidad_horas: parseFloat(document.getElementById('cantidad-horas').value),
+                descripcion: document.getElementById('desc-registro').value,
+                creado_el: new Date().toISOString()
+            });
+
+            document.getElementById('cantidad-horas').value = "";
+            document.getElementById('desc-registro').value = "";
+            await cargarHoras();
+            alert("¡Horas guardadas correctamente!");
+        } catch (err) {
+            alert("Error al guardar: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Guardar horas en la nube";
+        }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
+</script>
+
+</body>
+</html>
