@@ -460,3 +460,5 @@ importJSON=async function(e){
   };
   reader.readAsText(file);
 };
+
+initCloudData();
