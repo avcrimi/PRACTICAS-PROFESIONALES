@@ -1,0 +1,77 @@
+// PRÁCTICAS PROFESIONALES - ACCESO V4
+const baseLoginV4=login;
+function norm4(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ')}
+function full4(s){return s?((s.name||s.nombre||'')+' '+(s.surname||s.apellido||'')).trim():'—'}
+function makeCode4(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const a=new Uint8Array(8);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(a);let o='';for(let i=0;i<8;i++)o+=chars[a[i]%chars.length];return o}
+async function hash4(v){const data=new TextEncoder().encode(norm4(v));if(window.crypto&&crypto.subtle){const d=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(d)).map(x=>x.toString(16).padStart(2,'0')).join('')}return btoa(unescape(encodeURIComponent(norm4(v))))}
+function setupAuth4(){const tabs=document.querySelector('.tabs'),studentBox=document.getElementById('loginStudent'),tutorBox=document.getElementById('loginTutor');if(!tabs||!studentBox||!tutorBox)return;const oldStudent=tabs.querySelector('#ltStudent'),oldTutor=tabs.querySelector('#ltTutor');if(oldStudent)oldStudent.style.display='none';if(oldTutor)oldTutor.style.display='none';let studentTab=tabs.querySelector('[data-v4-student]'),registerTab=tabs.querySelector('[data-v4-register]'),tutorTab=tabs.querySelector('[data-v4-tutor]');if(!studentTab){studentTab=document.createElement('button');studentTab.className='btn tab active';studentTab.textContent='Iniciar sesión';studentTab.setAttribute('data-v4-student','1');studentTab.onclick=function(){showAuth4('login')};tabs.insertBefore(studentTab,tabs.firstChild)}if(!registerTab){registerTab=document.createElement('button');registerTab.className='btn tab';registerTab.textContent='Registrarse';registerTab.setAttribute('data-v4-register','1');registerTab.onclick=function(){showAuth4('register')};tabs.insertBefore(registerTab,studentTab.nextSibling)}if(!tutorTab){tutorTab=document.createElement('button');tutorTab.className='btn tab';tutorTab.textContent='Tutor';tutorTab.setAttribute('data-v4-tutor','1');tutorTab.onclick=function(){showAuth4('tutor')};tabs.appendChild(tutorTab)}const form=studentBox.querySelector('form');if(form&&!document.getElementById('loginCodeV4')){const div=document.createElement('div');div.className='field';const label=document.createElement('label');label.textContent='Clave de acceso';const input=document.createElement('input');input.id='loginCodeV4';input.type='password';input.minLength=8;input.maxLength=8;input.required=true;input.placeholder='Tu clave personal';div.appendChild(label);div.appendChild(input);const btn=form.querySelector('.btn-primary');if(btn)form.insertBefore(div,btn);else form.appendChild(div);form.onsubmit=function(e){studentLogin4(e)}}let reg=document.getElementById('registerBoxV4');if(!reg){reg=document.createElement('div');reg.id='registerBoxV4';reg.style.display='none';reg.innerHTML='<form class="form" id="registerFormV4"><div class="row"><div class="field"><label>Nombre</label><input id="registerNameV4" required></div><div class="field"><label>Apellido</label><input id="registerSurnameV4" required></div></div><div class="field"><label>Carrera</label><input id="registerCareerV4" required placeholder="Ej. Lic. en Criminología y Seguridad"></div><button class="btn btn-primary">Registrarme</button><div class="notice">Tu alta se registra directamente en la planilla de alumnos y queda disponible para la tutoría.</div></form>';studentBox.parentNode.insertBefore(reg,studentBox.nextSibling);document.getElementById('registerFormV4').onsubmit=function(e){studentRegister4(e)}}showAuth4('login')}
+function showAuth4(mode){const loginBox=document.getElementById('loginStudent'),tutorBox=document.getElementById('loginTutor'),reg=document.getElementById('registerBoxV4'),tabs=document.querySelector('.tabs');if(!tabs)return;const st=tabs.querySelector('[data-v4-student]'),rt=tabs.querySelector('[data-v4-register]'),tt=tabs.querySelector('[data-v4-tutor]');if(mode==='tutor'){loginBox.style.display='none';if(reg)reg.style.display='none';tutorBox.style.display='block'}else if(mode==='register'){loginBox.style.display='none';tutorBox.style.display='none';if(reg)reg.style.display='block'}else{loginBox.style.display='block';tutorBox.style.display='none';if(reg)reg.style.display='none'}if(st)st.classList.toggle('active',mode==='login');if(rt)rt.classList.toggle('active',mode==='register');if(tt)tt.classList.toggle('active',mode==='tutor')}
+function refreshSuggestions4(){const dl=document.getElementById('studentNameSuggestionsV4');if(!dl)return;const list=(db.students||[]).filter(s=>s.active!==false).sort((a,b)=>full4(a).localeCompare(full4(b),'es'));dl.innerHTML=list.map(s=>'<option value="'+esc(full4(s))+'"></option>').join('')}
+function autofill4(){const n=document.getElementById('ln'),s=document.getElementById('ls');if(!n||!s)return;const st=(db.students||[]).find(x=>x.active!==false&&norm4(full4(x))===norm4(n.value));if(st)s.value=st.surname||st.apellido||''}
+async function studentLogin4(e){e.preventDefault();const name=document.getElementById('ln').value.trim(),surname=document.getElementById('ls').value.trim(),code=document.getElementById('loginCodeV4').value.trim();if(!name||!surname||!code){alert('Completá nombre, apellido y clave de acceso.');return}try{const hash=await hash4(code);const candidates=(db.students||[]).filter(s=>s.active!==false&&norm4(s.name)===norm4(name)&&norm4(s.surname)===norm4(surname));const st=candidates.find(s=>s.accessCodeHash===hash);if(!st){alert('No pudimos validar el acceso. Revisá tus datos o utilizá “Registrarse” si es tu primer ingreso.');return}session={role:'student',studentId:st.id,tab:'home'};renderStudent()}catch(err){console.error(err);alert('No se pudo validar el acceso: '+err.message)}}
+async function studentRegister4(e){e.preventDefault();const name=document.getElementById('registerNameV4').value.trim(),surname=document.getElementById('registerSurnameV4').value.trim(),career=document.getElementById('registerCareerV4').value.trim();if(!name||!surname||!career){alert('Completá nombre, apellido y carrera.');return}const existing=(db.students||[]).find(s=>norm4(s.name)===norm4(name)&&norm4(s.surname)===norm4(surname)&&norm4(s.career)===norm4(career));if(existing&&existing.accessCodeHash){alert('Este alumno ya está registrado. Usá “Iniciar sesión”.');showAuth4('login');return}const id=existing?existing.id:'stu-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);const access=makeCode4(),hash=await hash4(access),now=new Date().toISOString();const payload={nombreCompleto:(name+' '+surname).trim(),nombre:name,apellido:surname,carrera:career,rol:'estudiante',name:name,surname:surname,career:career,organization:existing&&existing.organization?existing.organization:'',referent:existing&&existing.referent?existing.referent:'',active:true,accessCodeHash:hash,accessCodeVersion:1,updatedAt:now};if(!existing)payload.createdAt=today();try{await firestore.collection('usuarios').doc(id).set(payload,{merge:true});const local=Object.assign({id:id},payload),index=db.students.findIndex(s=>s.id===id);if(index>=0)db.students[index]=Object.assign({},db.students[index],local);else db.students.push(local);try{await firestore.collection('registros_horas').doc('audit-'+id+'-'+Date.now()).set({id_estudiante:id,tipo:'auditoria',fecha:today(),cantidad_horas:0,descripcion:'Alta de alumno: '+name+' '+surname,accion:'REGISTER_STUDENT',creado_el:now,origen:'v4'},{merge:false})}catch(auditErr){console.warn(auditErr)}session={role:'student',studentId:id,tab:'home'};renderStudent();alert('¡Registro completado!\n\nTu clave personal es: '+access+'\n\nGuardala: la vas a necesitar para volver a iniciar sesión.')}catch(err){console.error(err);alert('No se pudo registrar al alumno en la planilla: '+err.message)}}
+
+async function migrateMainDataIntoV4(){
+  try{
+    const snap=await firestore.collection('system').doc('main_data').get();
+    if(!snap.exists)return;
+    const remote=snap.data()||{};
+    const students=Array.isArray(remote.students)?remote.students:[];
+    for(let i=0;i<students.length;i+=400){
+      const batch=firestore.batch();
+      students.slice(i,i+400).forEach(st=>{
+        const id=String(st.id||('stu-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8)));
+        const full=((st.name||'')+' '+(st.surname||'')).trim();
+        batch.set(firestore.collection('usuarios').doc(id),{
+          nombreCompleto:full,nombre:st.name||'',apellido:st.surname||'',carrera:st.career||'',
+          rol:'estudiante',name:st.name||'',surname:st.surname||'',career:st.career||'',
+          organization:st.organization||'',referent:st.referent||'',active:st.active!==false,
+          legacyStudentId:id
+        },{merge:true});
+      });
+      await batch.commit();
+    }
+    const records=[];
+    (Array.isArray(remote.practices)?remote.practices:[]).forEach(x=>{
+      if(x&&x.id)records.push({id:'legacy-p-'+String(x.id),data:{
+        id_estudiante:String(x.studentId||''),tipo:'practica',fecha:x.date||'',cantidad_horas:Number(x.hours||0),
+        descripcion:x.activity||'',observaciones:x.notes||'',hora_inicio:x.start||'',hora_fin:x.end||'',
+        creado_el:x.createdAt||new Date().toISOString(),origen:'legacy-main-data'
+      }});
+    });
+    (Array.isArray(remote.classes)?remote.classes:[]).forEach(x=>{
+      if(x&&x.id)records.push({id:'legacy-c-'+String(x.id),data:{
+        id_estudiante:String(x.studentId||''),tipo:'clase',fecha:x.date||'',cantidad_horas:Number(x.hours||0),
+        descripcion:x.status||'Presente',creado_el:x.createdAt||new Date().toISOString(),origen:'legacy-main-data'
+      }});
+    });
+    (Array.isArray(remote.improvements)?remote.improvements:[]).forEach(x=>{
+      if(x&&x.id)records.push({id:'legacy-i-'+String(x.id),data:{
+        id_estudiante:String(x.studentId||''),tipo:'mejora',fecha:String(x.month||''),cantidad_horas:0,
+        descripcion:x.text||'',creado_el:x.savedAt||x.createdAt||new Date().toISOString(),origen:'legacy-main-data'
+      }});
+    });
+    for(let i=0;i<records.length;i+=400){
+      const batch=firestore.batch();
+      records.slice(i,i+400).forEach(r=>batch.set(firestore.collection('registros_horas').doc(r.id),r.data,{merge:true}));
+      await batch.commit();
+    }
+  }catch(err){console.warn('Migración histórica V4:',err);}
+}
+saveImprovement=async function(e){
+  e.preventDefault();
+  const month=today().slice(0,7),text=document.getElementById('improvement').value.trim();
+  const id='i-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+  try{
+    await firestore.collection('registros_horas').doc(id).set({
+      id_estudiante:session.studentId,tipo:'mejora',fecha:month,cantidad_horas:0,
+      descripcion:text,creado_el:new Date().toISOString(),origen:'v4'
+    },{merge:false});
+    renderStudent();alert('Mejora mensual guardada en la nube.');
+  }catch(err){console.error(err);alert('No se pudo guardar la mejora: '+err.message);}
+}
+function subscribeV4(){firestore.collection('usuarios').onSnapshot(snap=>{db.students=snap.docs.map(d=>{const x=Object.assign({id:d.id},d.data());let name=x.name||x.nombre||'',surname=x.surname||x.apellido||'';if((!name||!surname)&&x.nombreCompleto){const p=x.nombreCompleto.trim().split(/\s+/);if(!name)name=p.slice(0,-1).join(' ');if(!surname)surname=p.slice(-1)[0]||''}return Object.assign(x,{id:d.id,name:name,surname:surname,career:x.career||x.carrera||'',active:x.active!==false})}).filter(x=>!x.rol||x.rol==='estudiante');if(!session){login()}else if(session.role==='student'){renderStudent()}else{renderTutor()}refreshSuggestions4()},err=>{console.error('Sincronización de alumnos:',err);if(!session)login()});firestore.collection('registros_horas').onSnapshot(snap=>{const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()));db.practices=rows.filter(x=>x.tipo==='practica').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),date:x.fecha||'',start:x.hora_inicio||'',end:x.hora_fin||'',hours:Number(x.cantidad_horas||0),activity:x.descripcion||'',notes:x.observaciones||'',createdAt:x.creado_el||''}));db.classes=rows.filter(x=>x.tipo==='clase').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),date:x.fecha||'',hours:Number(x.cantidad_horas||0),status:x.descripcion||'Presente',createdAt:x.creado_el||''}));db.improvements=rows.filter(x=>x.tipo==='mejora').map(x=>({id:x.id,studentId:x.id_estudiante||'',month:x.fecha||'',text:x.descripcion||'',savedAt:x.creado_el||'',createdAt:x.creado_el||''}));if(session){if(session.role==='student')renderStudent();else renderTutor()}},err=>console.error('Sincronización de registros:',err))}
+login=function(){baseLoginV4();setupAuth4();const n=document.getElementById('ln');if(n){n.setAttribute('list','studentNameSuggestionsV4');n.oninput=autofill4;let dl=document.getElementById('studentNameSuggestionsV4');if(!dl){dl=document.createElement('datalist');dl.id='studentNameSuggestionsV4';n.parentNode.appendChild(dl)}}refreshSuggestions4()};
+savePractice=async function(e){e.preventDefault();const stid=session.studentId,date=document.getElementById('pd').value,start=document.getElementById('ps').value,end=document.getElementById('pe').value,activity=document.getElementById('pa').value.trim(),notes=document.getElementById('pn').value.trim();const day=new Date(date+'T12:00:00').getDay();if(day===0||day===6){alert('La jornada práctica debe ser de lunes a viernes.');return}const sh=Number(start.split(':')[0]),sm=Number(start.split(':')[1]),eh=Number(end.split(':')[0]),em=Number(end.split(':')[1]),minutes=(eh*60+em)-(sh*60+sm);if(minutes<=0){alert('La hora de finalización debe ser posterior a la de inicio.');return}const hours=Math.round(minutes/60*100)/100,weekly=weeklyPractice(stid,date);if(weekly+hours>weekMax+1e-9){alert('Esta carga supera el máximo de '+weekMax+' horas semanales. Tenés '+fmt(weekly)+' en esa semana.');return}const id='p-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);try{await firestore.collection('registros_horas').doc(id).set({id_estudiante:stid,tipo:'practica',fecha:date,cantidad_horas:hours,descripcion:activity,observaciones:notes,hora_inicio:start,hora_fin:end,creado_el:new Date().toISOString(),origen:'v4'},{merge:false});session.tab='home';renderStudent();alert('Registro guardado en la nube: '+fmt(hours)+'.')}catch(err){console.error(err);alert('No se pudo guardar el registro: '+err.message)}};
+saveClass=async function(e){e.preventDefault();const date=document.getElementById('cd').value,hours=Number(document.getElementById('ch').value);if(!Number.isFinite(hours)||hours<=0||hours>24){alert('Ingresá una cantidad de horas válida.');return}const exists=db.classes.find(x=>x.studentId===session.studentId&&x.date===date);if(exists){alert('Ya existe una asistencia para esa fecha. El registro anterior se conserva y no se reemplaza.');return}const id='c-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);try{await firestore.collection('registros_horas').doc(id).set({id_estudiante:session.studentId,tipo:'clase',fecha:date,cantidad_horas:hours,descripcion:'Presente',creado_el:new Date().toISOString(),origen:'v4'},{merge:false});session.tab='home';renderStudent();alert('Asistencia guardada en la nube.')}catch(err){console.error(err);alert('No se pudo guardar la asistencia: '+err.message)}};
+(async function(){await migrateMainDataIntoV4();subscribeV4()})();
