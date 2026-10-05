@@ -178,7 +178,7 @@ renderTutor=function(){
   if(session&&session.role==='tutor'&&session.tab==='history'){
     document.getElementById('app').innerHTML=layout(
       '<div class="hero"><div><div class="eyebrow">Panel de tutores</div><div class="title">Historial completo</div><div class="muted">Todas las cargas de todos los alumnos.</div></div></div>'+
-      '<div class="nav-tabs"><button class="btn" onclick="session.tab=\\'dashboard\\';renderTutor()">Dashboard</button><button class="btn" onclick="session.tab=\\'students\\';renderTutor()">Alumnos</button><button class="btn active">Historial</button></div>'+tutorActivityF(),
+      '<div class="nav-tabs"><button class="btn" onclick='session.tab="dashboard";renderTutor()'>Dashboard</button><button class="btn" onclick='session.tab="students";renderTutor()'>Alumnos</button><button class="btn active">Historial</button></div>'+tutorActivityF(),
       'TUTOR · '+session.tutor
     );
     return;
