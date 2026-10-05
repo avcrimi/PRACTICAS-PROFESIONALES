@@ -121,10 +121,22 @@ renderStudent=function(){
   requestAnimationFrame(function(){
     const nav=document.querySelector('.nav-tabs');
     if(!nav||!session)return;
-    const labels=['home','practice','class','history','planilla','improvement'];
-    const buttons=nav.querySelectorAll('button');
-    buttons.forEach(function(btn,i){
-      if(i<labels.length)btn.classList.toggle('active',labels[i]===session.tab);
+
+    const labels={
+      'Inicio':'home',
+      'Registrar práctica':'practice',
+      'Asistencia a clase':'class',
+      'Mi historial':'history',
+      'Mi planilla':'planilla',
+      'Mejora mensual':'improvement'
+    };
+
+    nav.querySelectorAll('button').forEach(function(btn){
+      const text=btn.textContent.trim();
+      if(labels[text]){
+        btn.classList.remove('active');
+        if(labels[text]===session.tab)btn.classList.add('active');
+      }
     });
   });
 };
