@@ -47,31 +47,36 @@ async function studentRegisterV6(e){
   try{
     await ensureAnonymousAuthV6();
     const ref=firestore.collection('registros_horas').doc('alumno-'+studentId);
-    await ref.create({
-      id_estudiante:studentId,
-      tipo:'registro_alumno',
-      nombre:name,
-      apellido:surname,
-      carrera:career,
-      nombreCompleto:(name+' '+surname).trim(),
-      accessCodeHash:hash,
-      accessCodeVersion:1,
-      active:true,
-      createdAt:today(),
-      creado_el:now,
-      organization:'',
-      referent:'',
-      origen:'v8'
+
+    await firestore.runTransaction(async function(tx){
+      const snap=await tx.get(ref);
+      if(snap.exists)throw new Error('ALREADY_REGISTERED');
+      tx.set(ref,{
+        id_estudiante:studentId,
+        tipo:'registro_alumno',
+        nombre:name,
+        apellido:surname,
+        carrera:career,
+        nombreCompleto:(name+' '+surname).trim(),
+        accessCodeHash:hash,
+        accessCodeVersion:1,
+        active:true,
+        createdAt:today(),
+        creado_el:now,
+        organization:'',
+        referent:'',
+        origen:'v8'
+      });
     });
 
     session={role:'student',studentId,tab:'home'};
     switchRecordsListenerV8();
     renderStudent();
-    alert('¡Registro completado!\n\nTu clave personal es: '+access+'\n\nGuardala para futuros ingresos.');
+    alert('¡Registro completado!\\n\\nTu clave personal es: '+access+'\\n\\nGuardala para futuros ingresos.');
   }catch(err){
     console.error(err);
-    if(err&&err.code==='already-exists'){
-      alert('Este alumno ya fue registrado. Usá “Iniciar sesión” con la clave que recibiste.');
+    if(err&&String(err.message||'')==='ALREADY_REGISTERED'){
+      alert('Este alumno ya fue registrado. Usá “Iniciar sesión”.');
       login6('login');
       return;
     }
