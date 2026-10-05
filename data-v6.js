@@ -90,6 +90,35 @@ function tutorLoginV6(e){
   if(!t){alert('PIN incorrecto.');return}
   session={role:'tutor',tutor:t.name,tab:'dashboard'};switchRecordsListenerV8();renderTutor();
 }
+let recordsUnsubscribeV8=null;
+function mapRecordsV8(rows){
+  db.practices=rows.filter(x=>x.tipo==='practica').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),date:x.fecha||'',start:x.hora_inicio||'',end:x.hora_fin||'',hours:Number(x.cantidad_horas||0),activity:x.descripcion||'',notes:x.observaciones||'',createdAt:x.creado_el||''}));
+  db.classes=rows.filter(x=>x.tipo==='clase').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),date:x.fecha||'',hours:Number(x.cantidad_horas||0),status:x.descripcion||'Presente',createdAt:x.creado_el||''}));
+  db.improvements=rows.filter(x=>x.tipo==='mejora').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),month:x.fecha||'',text:x.descripcion||'',savedAt:x.creado_el||'',createdAt:x.creado_el||''}));
+}
+function switchRecordsListenerV8(){
+  if(recordsUnsubscribeV8){recordsUnsubscribeV8();recordsUnsubscribeV8=null;}
+  if(!session){db.practices=[];db.classes=[];db.improvements=[];return;}
+  let q=firestore.collection('registros_horas');
+  if(session.role==='student')q=q.where('id_estudiante','==',String(session.studentId));
+  recordsUnsubscribeV8=q.onSnapshot(snap=>{
+    mapRecordsV8(snap.docs.map(d=>Object.assign({id:d.id},d.data())));
+    if(session&&session.role==='student')renderStudent();
+    else if(session&&session.role==='tutor')renderTutor();
+  },err=>console.error('Sincronización de cargas:',err));
+}
+function applyRegistrationDirectoryV8(rows){
+  const regs=rows.filter(x=>x.tipo==='registro_alumno').map(x=>({id:String(x.id_estudiante||''),name:x.nombre||'',surname:x.apellido||'',career:x.carrera||'',organization:x.organization||'',referent:x.referent||'',active:x.active!==false,accessCodeHash:x.accessCodeHash||'',fromRegistrationV8:true}));
+  const map=new Map();
+  (db.students||[]).forEach(st=>{if(!st.fromRegistrationV8)map.set(String(st.id),st);});
+  regs.forEach(st=>map.set(String(st.id),st));
+  db.__registeredStudentsV8=regs;
+  db.students=Array.from(map.values());
+  refreshV6Suggestions();
+  if(!session)login6(authModeV6);
+  else if(session.role==='student')renderStudent();
+  else renderTutor();
+}
 function subscribeMainDataV6(){
   firestore.collection('system').doc('main_data').onSnapshot(snap=>{
     const data=snap.exists?(snap.data()||{}):{};
@@ -97,15 +126,14 @@ function subscribeMainDataV6(){
     db.tutors=Array.isArray(data.tutors)?data.tutors:[];
     if(data.settings)db.settings=Object.assign({},db.settings,data.settings);
     refreshV6Suggestions();
-    if(!session)login6(authModeV6);else if(session.role==='student')renderStudent();else renderTutor();
-  },err=>{console.error('Sincronización de planilla:',err);if(!session)login6(authModeV6)});
-  firestore.collection('registros_horas').onSnapshot(snap=>{
-    const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
-    db.practices=rows.filter(x=>x.tipo==='practica').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),date:x.fecha||'',start:x.hora_inicio||'',end:x.hora_fin||'',hours:Number(x.cantidad_horas||0),activity:x.descripcion||'',notes:x.observaciones||'',createdAt:x.creado_el||''}));
-    db.classes=rows.filter(x=>x.tipo==='clase').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),date:x.fecha||'',hours:Number(x.cantidad_horas||0),status:x.descripcion||'Presente',createdAt:x.creado_el||''}));
-    db.improvements=rows.filter(x=>x.tipo==='mejora').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),month:x.fecha||'',text:x.descripcion||'',savedAt:x.creado_el||'',createdAt:x.creado_el||''}));
-    if(session){if(session.role==='student')renderStudent();else renderTutor()}
-  },err=>console.error('Sincronización de cargas:',err));
+    if(!session)login6(authModeV6);
+    else if(session.role==='student')renderStudent();
+    else renderTutor();
+  },err=>{console.error('Sincronización de planilla:',err);if(!session)login6(authModeV6);});
+  firestore.collection('registros_horas').where('tipo','==','registro_alumno').onSnapshot(snap=>{
+    applyRegistrationDirectoryV8(snap.docs.map(d=>Object.assign({id:d.id},d.data())));
+  },err=>console.error('Sincronización del padrón:',err));
+  switchRecordsListenerV8();
 }
 function refreshV6Suggestions(){const d=document.getElementById('v6Students');if(!d)return;d.innerHTML=(db.students||[]).filter(x=>x.active!==false).sort((a,b)=>full6(a).localeCompare(full6(b),'es')).map(x=>'<option value="'+esc(full6(x))+'"></option>').join('')}
 login=function(){login6('login')};
