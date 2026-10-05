@@ -6,7 +6,10 @@ function full6(s){return s?((s.name||s.nombre||'')+' '+(s.surname||s.apellido||'
 function code6(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const a=new Uint8Array(8);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(a);let o='';for(let i=0;i<8;i++)o+=chars[a[i]%chars.length];return o}
 async function hash6(v){const d=new TextEncoder().encode(norm6(v));if(window.crypto&&crypto.subtle){const h=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('')}return btoa(unescape(encodeURIComponent(norm6(v))))}
 function studentFromLegacy6(x){return {id:String(x.id||''),name:x.name||x.nombre||'',surname:x.surname||x.apellido||'',career:x.career||x.carrera||'',organization:x.organization||'',referent:x.referent||'',active:x.active!==false,accessCodeHash:x.accessCodeHash||''}}
+let authModeV6='login';
 function login6(mode){
+  mode=mode||authModeV6||'login';
+  authModeV6=mode;
   const list=((db.students||[]).filter(s=>s.active!==false).sort((a,b)=>full6(a).localeCompare(full6(b),'es')))
     .map(s=>'<option value="'+esc(full6(s))+'"></option>').join('');
   const tutor=(mode==='tutor');
@@ -14,9 +17,9 @@ function login6(mode){
     '<div class="eyebrow">GESTIÓN ACADÉMICA EN LA NUBE</div><h2>PRÁCTICAS PROFESIONALES</h2>'+
     '<div class="subtitle">Acceso seguro y sincronizado con la planilla de alumnos.</div>'+
     '<div class="tabs">'+
-      '<button id="v6Login" class="btn tab '+(!tutor?'active':'')+'" onclick="login6(\'login\')">Iniciar sesión</button>'+
-      '<button id="v6Register" class="btn tab" onclick="login6(\'register\')">Registrarse</button>'+
-      '<button id="v6Tutor" class="btn tab '+(tutor?'active':'')+'" onclick="login6(\'tutor\')">Tutor</button>'+
+      '<button id="v6Login" class="btn tab '+(mode==='login'?'active':'')+'" onclick="login6(\'login\')">Iniciar sesión</button>'+
+      '<button id="v6Register" class="btn tab '+(mode==='register'?'active':'')+'" onclick="login6(\'register\')">Registrarse</button>'+
+      '<button id="v6Tutor" class="btn tab '+(mode==='tutor'?'active':'')+'" onclick="login6(\'tutor\')">Tutor</button>'+
     '</div>'+
     (tutor?'<div id="v6TutorBox"><form class="form" onsubmit="tutorLoginV6(event)"><div class="field"><label>PIN de tutor</label><input id="v6Pin" type="password" inputmode="numeric" required></div><button class="btn btn-primary">Ingresar al panel de tutor</button></form></div>':mode==='register'?'<div id="v6RegisterBox"><form class="form" onsubmit="studentRegisterV6(event)"><div class="row"><div class="field"><label>Nombre</label><input id="v6Name" required></div><div class="field"><label>Apellido</label><input id="v6Surname" required></div></div><div class="field"><label>Carrera</label><input id="v6Career" required placeholder="Ej. Lic. en Criminología y Seguridad"></div><button class="btn btn-primary">Registrarme</button><div class="notice">Al registrarte quedás incorporado directamente a la planilla de alumnos y recibís una clave personal.</div></form></div>':'<div id="v6LoginBox"><form class="form" onsubmit="studentLoginV6(event)"><div class="field"><label>Nombre</label><input id="v6LoginName" list="v6Students" autocomplete="off" oninput="auto6()" required><datalist id="v6Students">'+list+'</datalist></div><div class="field"><label>Apellido</label><input id="v6LoginSurname" required></div><div class="field"><label>Clave de acceso</label><input id="v6Code" type="password" minlength="8" maxlength="8" required placeholder="Tu clave personal"></div><button class="btn btn-primary">Iniciar sesión</button><div class="notice">Usá la clave personal que recibiste al registrarte.</div></form></div>')+
   '</div></div>';
@@ -63,7 +66,7 @@ function subscribeMainDataV6(){
     db.tutors=Array.isArray(data.tutors)?data.tutors:[];
     if(data.settings)db.settings=Object.assign({},db.settings,data.settings);
     refreshV6Suggestions();
-    if(!session)login6('login');else if(session.role==='student')renderStudent();else renderTutor();
+    if(!session)login6(authModeV6);else if(session.role==='student')renderStudent();else renderTutor();
   },err=>{console.error('Sincronización de planilla:',err);if(!session)login6('login')});
   firestore.collection('registros_horas').onSnapshot(snap=>{
     const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
@@ -347,7 +350,7 @@ const recordsListenerV7=firestore.collection('registros_horas').onSnapshot(funct
   regs.forEach(function(st){map.set(String(st.id),st)});
   db.students=Array.from(map.values());
 
-  if(!session)login6('login');
+  if(!session)login6(authModeV6);
   else if(session.role==='student')renderStudent();
   else renderTutor();
 },function(err){
