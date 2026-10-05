@@ -24,25 +24,22 @@ function login6(mode){
 function auto6(){const n=document.getElementById('v6LoginName'),s=document.getElementById('v6LoginSurname');if(!n||!s)return;const st=(db.students||[]).find(x=>x.active!==false&&norm6(full6(x))===norm6(n.value));if(st)s.value=st.surname||''}
 async function studentRegisterV6(e){
   e.preventDefault();
-  const name=document.getElementById('v6Name').value.trim(),surname=document.getElementById('v6Surname').value.trim(),career=document.getElementById('v6Career').value.trim();
+  const name=document.getElementById('v6Name').value.trim();
+  const surname=document.getElementById('v6Surname').value.trim();
+  const career=document.getElementById('v6Career').value.trim();
   if(!name||!surname||!career){alert('Completá nombre, apellido y carrera.');return}
+  const existing=(db.students||[]).find(s=>norm6(s.name)===norm6(name)&&norm6(s.surname)===norm6(surname)&&norm6(s.career)===norm6(career));
+  if(existing&&existing.accessCodeHash){alert('Este alumno ya está registrado. Usá “Iniciar sesión”.');login6('login');return}
+  const studentId=existing?String(existing.id):('stu-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8));
   const access=code6(),hash=await hash6(access),now=new Date().toISOString();
-  const ref=firestore.collection('system').doc('main_data');
-  let resultId='',already=false;
   try{
-    await firestore.runTransaction(async tx=>{
-      const snap=await tx.get(ref);
-      const data=snap.exists?(snap.data()||{}):{};
-      const students=Array.isArray(data.students)?data.students:[];
-      const existing=students.find(s=>norm6(s.name||'')===norm6(name)&&norm6(s.surname||'')===norm6(surname)&&norm6(s.career||'')===norm6(career));
-      if(existing&&existing.active!==false){resultId=String(existing.id);already=!!existing.accessCodeHash;return}
-      resultId='stu-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
-      const student={id:resultId,name:name,surname:surname,career:career,organization:'',referent:'',active:true,createdAt:today(),updatedAt:now,accessCodeHash:hash,accessCodeVersion:1};
-      const next=students.concat([student]);
-      tx.set(ref,{students:next},{merge:true});
-    });
-    if(already){alert('Este alumno ya está registrado. Entrá desde “Iniciar sesión” con la clave personal.');login6('login');return}
-    session={role:'student',studentId:resultId,tab:'home'};
+    const ref=firestore.collection('registros_horas').doc('alumno-'+studentId);
+    if((await ref.get()).exists){alert('Este alumno ya está registrado. Usá “Iniciar sesión”.');login6('login');return}
+    await ref.set({id_estudiante:studentId,tipo:'registro_alumno',nombre:name,apellido:surname,carrera:career,nombreCompleto:(name+' '+surname).trim(),accessCodeHash:hash,accessCodeVersion:1,active:true,createdAt:today(),creado_el:now,organization:'',referent:'',origen:'v7'},{merge:false});
+    if(!Array.isArray(db.__registeredStudentsV6))db.__registeredStudentsV6=[];
+    db.__registeredStudentsV6.push({id:studentId,name,surname,career,organization:'',referent:'',active:true,accessCodeHash:hash});
+    db.students.push({id:studentId,name,surname,career,organization:'',referent:'',active:true,accessCodeHash:hash});
+    session={role:'student',studentId,tab:'home'};
     renderStudent();
     alert('¡Registro completado!\n\nTu clave personal es: '+access+'\n\nGuardala para futuros ingresos.');
   }catch(err){console.error(err);alert('No se pudo registrar al alumno en la planilla: '+err.message)}
