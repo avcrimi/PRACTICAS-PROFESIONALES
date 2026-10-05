@@ -152,7 +152,7 @@ async function loginTutorF(e){
 function startTutorF(){
   clearF();
   const dir=firestore.collection('student_directory').onSnapshot(function(snap){
-    db.students=snap.docs.map(function(d){const x=d.data()||{};return {id:String(x.studentId||d.id),name:x.name||'',surname:x.surname||'',career:x.career||'',organization:x.organization||'',referent:x.referent||'',active:x.active!==false}});
+    db.students=snap.docs.map(function(d){const x=d.data()||{};return {id:String(x.studentId||d.id),directoryDocId:d.id,name:x.name||'',surname:x.surname||'',career:x.career||'',organization:x.organization||'',referent:x.referent||'',active:x.active!==false}});
     if(session&&session.role==='tutor')renderTutor();
   },function(err){console.error('Directorio tutor:',err)});
   const reg=firestore.collection('registros_horas').onSnapshot(function(snap){
@@ -205,14 +205,30 @@ async function safeSaveStudentF(e){
 saveStudent=safeSaveStudentF;
 deleteStudent=async function(id){
   try{
-    if(!SEC_USER||SEC_USER.role!=='tutor')throw new Error('Sesión de tutor inválida.');
-    const st=(db.students||[]).find(function(x){return String(x.id)===String(id)});if(!st)return;
-    if(!confirm('¿Deshabilitar a '+fullF(st)+'? Sus datos y registros se conservarán.'))return;
-    const key=await hashF((st.name||'')+'|'+(st.surname||'')+'|'+(st.career||''));
-    await firestore.collection('student_directory').doc(key).set({active:false,updatedAt:new Date().toISOString()},{merge:true});
-    renderTutor();alert('Alumno deshabilitado. No se borró ningún registro.');
-  }catch(err){console.error(err);alert('No se pudo deshabilitar al alumno: '+err.message)}
+    if(!SEC_USER||SEC_USER.role!=='tutor')throw new Error('Necesitás ingresar como tutor para realizar esta acción.');
+    const st=(db.students||[]).find(function(x){return String(x.id)===String(id)});
+    if(!st)return;
+
+    if(!confirm('¿Eliminar a '+fullF(st)+' de la lista activa? Sus prácticas, clases y mejoras se conservarán.'))return;
+
+    const directoryId=st.directoryDocId||st.id;
+    await firestore.collection('student_directory').doc(String(directoryId)).set({
+      active:false,
+      disabledAt:new Date().toISOString(),
+      updatedAt:new Date().toISOString()
+    },{merge:true});
+
+    const idx=db.students.findIndex(function(x){return String(x.id)===String(id)});
+    if(idx>=0)db.students[idx].active=false;
+
+    renderTutor();
+    alert('Alumno eliminado de la lista activa. Sus registros históricos siguen guardados.');
+  }catch(err){
+    console.error(err);
+    alert('No se pudo eliminar al alumno: '+(err.message||err));
+  }
 };
+
 saveSettings=async function(){alert('La configuración de acceso se administra en Firebase Authentication y Firestore.')};
 addTutorPin=async function(){alert('Para agregar un tutor hay que crear primero su cuenta en Firebase Authentication y vincularla con un documento en Firestore.')};
 removeTutor=async function(){alert('Las cuentas de tutor se administran desde Firebase Authentication.')};
