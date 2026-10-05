@@ -67,7 +67,7 @@ function subscribeMainDataV6(){
     if(data.settings)db.settings=Object.assign({},db.settings,data.settings);
     refreshV6Suggestions();
     if(!session)login6(authModeV6);else if(session.role==='student')renderStudent();else renderTutor();
-  },err=>{console.error('Sincronización de planilla:',err);if(!session)login6('login')});
+  },err=>{console.error('Sincronización de planilla:',err);if(!session)login6(authModeV6)});
   firestore.collection('registros_horas').onSnapshot(snap=>{
     const rows=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
     db.practices=rows.filter(x=>x.tipo==='practica').map(x=>({id:x.id,studentId:String(x.id_estudiante||''),date:x.fecha||'',start:x.hora_inicio||'',end:x.hora_fin||'',hours:Number(x.cantidad_horas||0),activity:x.descripcion||'',notes:x.observaciones||'',createdAt:x.creado_el||''}));
