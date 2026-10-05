@@ -376,37 +376,6 @@ savePractice=savePracticeV7;
 saveClass=saveClassV7;
 saveImprovement=saveImprovementV7;
 
-const recordsListenerV7=firestore.collection('registros_horas').onSnapshot(function(snap){
-  const rows=snap.docs.map(function(doc){return Object.assign({id:doc.id},doc.data())});
-  const regs=rows.filter(function(x){return x.tipo==='registro_alumno'}).map(function(x){
-    return {
-      id:String(x.id_estudiante||''),
-      name:x.nombre||'',
-      surname:x.apellido||'',
-      career:x.carrera||'',
-      organization:x.organization||'',
-      referent:x.referent||'',
-      active:x.active!==false,
-      accessCodeHash:x.accessCodeHash||'',
-      fromRegistrationV7:true
-    };
-  });
-  db.__registeredStudentsV7=regs;
-
-  const map=new Map();
-  (db.students||[]).forEach(function(st){
-    if(!st.fromRegistrationV7)map.set(String(st.id),st);
-  });
-  regs.forEach(function(st){map.set(String(st.id),st)});
-  db.students=Array.from(map.values());
-
-  if(!session)login6(authModeV6);
-  else if(session.role==='student')renderStudent();
-  else renderTutor();
-},function(err){
-  console.error('Sincronización final de registros:',err);
-});
-
 // NAV_CLICK_FIX_V2
 document.addEventListener('click',function(event){
   const button=event.target.closest('.nav-tabs button');
