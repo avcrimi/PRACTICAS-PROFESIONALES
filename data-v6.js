@@ -110,3 +110,234 @@ studentLoginV6=async function(e){
   }
 };
 ensureAnonymousAuthV6().then(function(){console.log('Firebase Auth listo')}).catch(function(){});
+
+// FINAL_SYNC_CONFIG_V7
+// Todas las cargas se guardan como documentos independientes.
+// No se utiliza saveData() ni se reemplaza el documento principal.
+
+const renderStudentBaseV7=renderStudent;
+renderStudent=function(){
+  renderStudentBaseV7();
+  requestAnimationFrame(function(){
+    const nav=document.querySelector('.nav-tabs');
+    if(!nav||!session)return;
+    const labels=['home','practice','class','history','planilla','improvement'];
+    const buttons=nav.querySelectorAll('button');
+    buttons.forEach(function(btn,i){
+      if(i<labels.length)btn.classList.toggle('active',labels[i]===session.tab);
+    });
+  });
+};
+
+async function ensureAuthV7(){
+  if(firebase.auth().currentUser)return;
+  await firebase.auth().signInAnonymously();
+}
+
+async function savePracticeV7(e){
+  e.preventDefault();
+  try{
+    await ensureAuthV7();
+    const stid=session.studentId;
+    const date=document.getElementById('pd').value;
+    const start=document.getElementById('ps').value;
+    const end=document.getElementById('pe').value;
+    const activity=document.getElementById('pa').value.trim();
+    const notes=document.getElementById('pn').value.trim();
+    const day=new Date(date+'T12:00:00').getDay();
+    if(day===0||day===6){alert('La jornada práctica debe ser de lunes a viernes.');return}
+
+    const startParts=start.split(':'),endParts=end.split(':');
+    const minutes=(Number(endParts[0])*60+Number(endParts[1]))-(Number(startParts[0])*60+Number(startParts[1]));
+    if(minutes<=0){alert('La hora de finalización debe ser posterior a la de inicio.');return}
+
+    const hours=Math.round(minutes/60*100)/100;
+    const weekly=weeklyPractice(stid,date);
+    if(weekly+hours>weekMax+1e-9){
+      alert('Esta carga supera el máximo de '+weekMax+' horas semanales. Tenés '+fmt(weekly)+' en esa semana.');
+      return;
+    }
+
+    await firestore.collection('registros_horas').doc('p-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9)).set({
+      id_estudiante:stid,
+      tipo:'practica',
+      fecha:date,
+      cantidad_horas:hours,
+      descripcion:activity,
+      observaciones:notes,
+      hora_inicio:start,
+      hora_fin:end,
+      creado_el:new Date().toISOString(),
+      origen:'v7'
+    },{merge:false});
+
+    session.tab='home';
+    renderStudent();
+    alert('Registro guardado en la nube: '+fmt(hours)+'.');
+  }catch(err){
+    console.error(err);
+    alert('No se pudo guardar el registro: '+err.message);
+  }
+}
+
+async function saveClassV7(e){
+  e.preventDefault();
+  try{
+    await ensureAuthV7();
+    const date=document.getElementById('cd').value;
+    const hours=Number(document.getElementById('ch').value);
+    if(!Number.isFinite(hours)||hours<=0||hours>24){alert('Ingresá una cantidad de horas válida.');return}
+
+    if(db.classes.some(function(x){return x.studentId===session.studentId&&x.date===date;})){
+      alert('Ya existe una asistencia para esa fecha. El registro anterior se conserva y no se reemplaza.');
+      return;
+    }
+
+    await firestore.collection('registros_horas').doc('c-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9)).set({
+      id_estudiante:session.studentId,
+      tipo:'clase',
+      fecha:date,
+      cantidad_horas:hours,
+      descripcion:'Presente',
+      creado_el:new Date().toISOString(),
+      origen:'v7'
+    },{merge:false});
+
+    session.tab='home';
+    renderStudent();
+    alert('Asistencia guardada en la nube.');
+  }catch(err){
+    console.error(err);
+    alert('No se pudo guardar la asistencia: '+err.message);
+  }
+}
+
+async function saveImprovementV7(e){
+  e.preventDefault();
+  try{
+    await ensureAuthV7();
+    const month=today().slice(0,7);
+    const text=document.getElementById('improvement').value.trim();
+
+    await firestore.collection('registros_horas').doc('i-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9)).set({
+      id_estudiante:session.studentId,
+      tipo:'mejora',
+      fecha:month,
+      cantidad_horas:0,
+      descripcion:text,
+      creado_el:new Date().toISOString(),
+      origen:'v7'
+    },{merge:false});
+
+    renderStudent();
+    alert('Mejora mensual guardada en la nube.');
+  }catch(err){
+    console.error(err);
+    alert('No se pudo guardar la mejora: '+err.message);
+  }
+}
+
+updateStudentMeta=async function(stid,field,val){
+  try{
+    await ensureAuthV7();
+    const payload={};
+    payload[field]=val;
+    payload.updatedAt=new Date().toISOString();
+    await firestore.collection('registros_horas').doc('alumno-'+String(stid)).set(payload,{merge:true});
+  }catch(err){
+    console.error('No se pudo sincronizar el dato del alumno:',err);
+  }
+};
+
+saveStudent=async function(e){
+  e.preventDefault();
+  try{
+    await ensureAuthV7();
+    const idVal=document.getElementById('sid').value;
+    const name=document.getElementById('sn').value.trim();
+    const surname=document.getElementById('ss').value.trim();
+    const career=document.getElementById('sc').value.trim();
+    const organization=document.getElementById('so').value.trim();
+    const referent=document.getElementById('sr').value.trim();
+    const active=document.getElementById('sa').checked;
+    if(!name||!surname||!career){alert('Completá nombre, apellido y carrera.');return}
+
+    const id=idVal||('stu-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9));
+    await firestore.collection('registros_horas').doc('alumno-'+id).set({
+      id_estudiante:id,
+      tipo:'registro_alumno',
+      nombre:name,
+      apellido:surname,
+      carrera:career,
+      nombreCompleto:(name+' '+surname).trim(),
+      organization:organization,
+      referent:referent,
+      active:active,
+      updatedAt:new Date().toISOString(),
+      origen:'v7-admin'
+    },{merge:true});
+
+    clearStudentForm();
+    renderTutor();
+    alert('Alumno guardado correctamente.');
+  }catch(err){
+    console.error(err);
+    alert('No se pudo guardar el alumno: '+err.message);
+  }
+};
+
+deleteStudent=async function(id){
+  try{
+    await ensureAuthV7();
+    const st=db.students.find(function(x){return x.id===id;});
+    if(!st)return;
+    if(!confirm('¿Deshabilitar a '+full6(st)+'? Sus datos y registros se conservarán en la nube.'))return;
+
+    await firestore.collection('registros_horas').doc('alumno-'+id).set({
+      active:false,
+      disabledAt:new Date().toISOString(),
+      updatedAt:new Date().toISOString()
+    },{merge:true});
+
+    renderTutor();
+    alert('Alumno deshabilitado. Sus prácticas, clases y mejoras siguen conservadas.');
+  }catch(err){
+    console.error(err);
+    alert('No se pudo deshabilitar al alumno: '+err.message);
+  }
+};
+
+savePractice=savePracticeV7;
+saveClass=saveClassV7;
+saveImprovement=saveImprovementV7;
+
+const recordsListenerV7=firestore.collection('registros_horas').onSnapshot(function(snap){
+  const rows=snap.docs.map(function(doc){return Object.assign({id:doc.id},doc.data())});
+  const regs=rows.filter(function(x){return x.tipo==='registro_alumno'}).map(function(x){
+    return {
+      id:String(x.id_estudiante||''),
+      name:x.nombre||'',
+      surname:x.apellido||'',
+      career:x.carrera||'',
+      organization:x.organization||'',
+      referent:x.referent||'',
+      active:x.active!==false,
+      accessCodeHash:x.accessCodeHash||'',
+      fromRegistrationV7:true
+    };
+  });
+  db.__registeredStudentsV7=regs;
+
+  const map=new Map();
+  (db.students||[]).forEach(function(st){
+    if(!st.fromRegistrationV7)map.set(String(st.id),st);
+  });
+  regs.forEach(function(st){map.set(String(st.id),st)});
+  db.students=Array.from(map.values());
+
+  if(!session)login6('login');
+  else if(session.role==='student')renderStudent();
+  else renderTutor();
+},function(err){
+  console.error('Sincronización final de registros:',err);
+});
