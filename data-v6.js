@@ -77,3 +77,36 @@ function refreshV6Suggestions(){const d=document.getElementById('v6Students');if
 login=function(){login6('login')};
 window.__v6ready=true;
 subscribeMainDataV6();
+// AUTH_ANON_BOOT_V1
+async function ensureAnonymousAuthV6(){
+  try{
+    if(!firebase.auth)throw new Error('Firebase Authentication no está cargado.');
+    if(!firebase.auth().currentUser){
+      await firebase.auth().signInAnonymously();
+    }
+    window.__firebaseAuthReadyV6=true;
+  }catch(err){
+    console.error('Error de autenticación Firebase:',err);
+    alert('No se pudo iniciar la conexión segura con Firebase: '+err.message);
+    throw err;
+  }
+}
+const originalRegisterV6=studentRegisterV6;
+studentRegisterV6=async function(e){
+  try{
+    await ensureAnonymousAuthV6();
+    return await originalRegisterV6(e);
+  }catch(err){
+    console.error(err);
+  }
+};
+const originalStudentLoginV6=studentLoginV6;
+studentLoginV6=async function(e){
+  try{
+    await ensureAnonymousAuthV6();
+    return await originalStudentLoginV6(e);
+  }catch(err){
+    console.error(err);
+  }
+};
+ensureAnonymousAuthV6().then(function(){console.log('Firebase Auth listo')}).catch(function(){});
