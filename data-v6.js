@@ -353,3 +353,13 @@ const recordsListenerV7=firestore.collection('registros_horas').onSnapshot(funct
 },function(err){
   console.error('Sincronización final de registros:',err);
 });
+
+// NAV_CLICK_FIX_V2
+document.addEventListener('click',function(event){
+  const button=event.target.closest('.nav-tabs button');
+  if(!button)return;
+  const nav=button.closest('.nav-tabs');
+  if(!nav)return;
+  nav.querySelectorAll('button').forEach(function(b){b.classList.remove('active')});
+  button.classList.add('active');
+});
