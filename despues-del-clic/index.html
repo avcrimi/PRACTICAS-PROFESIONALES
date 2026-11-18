@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080811">
+<meta name="description" content="Guía gratuita de prevención digital para adolescentes y familias. Conocé señales de alerta, cómo cuidarte y dónde pedir ayuda.">
+<title>Después del clic | Guía de prevención digital</title>
+<style>
+:root{
+ --bg:#080811;--surface:#11111e;--surface2:#171729;--ink:#f5f5ff;--muted:#b5b5c9;
+ --purple:#ad69ff;--purple2:#7f43d2;--cyan:#4ce9ff;--red:#ff6278;--green:#9be8c2;
+ --line:rgba(173,105,255,.25);--max:1080px
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{margin:0;background:radial-gradient(ellipse at 8% 0%,#57268d55,transparent 35%),radial-gradient(ellipse at 96% 28%,#087f9950,transparent 30%),var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.12;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(#000,transparent 85%)}
+a{color:var(--cyan);text-underline-offset:3px}
+a:hover{color:#fff}
+button{font:inherit}
+.wrap{width:min(var(--max),calc(100% - 36px));margin:auto}
+header{position:sticky;top:0;z-index:20;background:#090914eF;backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{display:flex;align-items:center;gap:11px;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#fff;text-decoration:none}
+.logo-mark{height:32px;width:32px;display:grid;place-items:center;border:1px solid var(--cyan);color:var(--cyan);box-shadow:0 0 20px #4ce9ff35;font-size:17px}
+.navlinks{display:flex;gap:18px;align-items:center;font-size:12px}
+.navlinks a{color:var(--muted);text-decoration:none}
+.navlinks a:hover{color:var(--cyan)}
+.nav-cta{padding:9px 13px;border:1px solid #ad69ff7a;border-radius:7px;color:#fff!important}
+.hero{padding:76px 0 58px;position:relative}
+.eyebrow{display:flex;gap:9px;align-items:center;color:var(--cyan);font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase}
+.pip{height:7px;width:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 15px var(--cyan)}
+.hero-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:38px;align-items:center}
+h1{font-size:clamp(48px,8vw,88px);line-height:.96;letter-spacing:-.075em;margin:20px 0 20px;font-weight:950}
+h1 .grad{background:linear-gradient(100deg,var(--purple),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-lead{font-size:clamp(17px,2.1vw,21px);line-height:1.55;color:#dedeee;max-width:670px}
+.hero-sub{color:var(--muted);font-size:14px;max-width:640px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:27px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 17px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:900;letter-spacing:.07em;border:1px solid transparent;cursor:pointer}
+.btn-primary{background:linear-gradient(100deg,#873bd4,#335ec7);color:#fff;box-shadow:0 8px 30px #7f43d244}
+.btn-primary:hover{color:#fff;filter:brightness(1.12)}
+.btn-secondary{border-color:#4ce9ff66;color:var(--cyan);background:#4ce9ff09}
+.hero-art{min-height:330px;position:relative;display:grid;place-items:center}
+.orbit{width:min(310px,75vw);aspect-ratio:1;border:1px solid #ad69ff66;border-radius:50%;display:grid;place-items:center;position:relative;box-shadow:0 0 65px #793ad622,inset 0 0 60px #793ad611}
+.orbit:before,.orbit:after{content:"";position:absolute;border:1px solid #4ce9ff55;border-radius:50%;inset:24px;transform:rotate(-32deg) scaleX(.7)}
+.orbit:after{inset:-14px 48px;border-color:#ad69ff44;transform:rotate(48deg) scaleX(.8)}
+.core{width:56%;aspect-ratio:1;background:linear-gradient(145deg,#211338,#0b1d29);border:1px solid #4ce9ff88;border-radius:28px;display:grid;place-items:center;text-align:center;box-shadow:0 0 42px #4ce9ff22;transform:rotate(-8deg)}
+.core b{display:block;font-size:clamp(35px,5vw,52px);line-height:1;color:var(--cyan)}
+.core span{font-size:9px;letter-spacing:.18em;color:#fff;font-weight:900}
+.float{position:absolute;background:#11111eee;border:1px solid var(--line);padding:8px 11px;border-radius:7px;font-size:9px;letter-spacing:.12em;font-weight:900;color:var(--muted)}
+.float.one{top:12%;left:0}.float.two{right:-2%;top:30%;color:var(--cyan)}.float.three{bottom:11%;left:5%;color:var(--purple)}
+.note{background:#121222;border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;margin:0 0 22px}
+.note .symbol{font-size:20px;color:var(--cyan);line-height:1.2}
+.note p{margin:0;color:#d3d3e3;font-size:13px}
+.note strong{color:#fff}
+section{padding:48px 0}
+.section-top{margin-bottom:22px}
+.label{font-size:10px;font-weight:900;color:var(--purple);letter-spacing:.22em;text-transform:uppercase}
+h2{font-size:clamp(29px,4.5vw,46px);line-height:1.08;letter-spacing:-.045em;margin:9px 0 12px}
+.intro{color:var(--muted);max-width:760px;margin:0;font-size:15px}
+.grid{display:grid;gap:15px}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:linear-gradient(145deg,#171729eF,#0e101ceF);border:1px solid #ffffff17;border-radius:13px;padding:21px;position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;left:0;top:0;height:2px;width:62px;background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.card h3{font-size:18px;line-height:1.25;margin:10px 0 8px}
+.card p{font-size:13px;line-height:1.65;color:var(--muted);margin:0}
+.icon{font-size:23px;color:var(--cyan)}
+.smalltag{display:inline-block;font-size:9px;letter-spacing:.15em;font-weight:900;color:var(--cyan);text-transform:uppercase}
+.accent{color:var(--cyan)}
+.crimi-band{display:grid;grid-template-columns:.85fr 1.15fr;gap:25px;align-items:center;background:linear-gradient(120deg,#22143b,#0c1923);border:1px solid #ad69ff55;border-radius:16px;padding:clamp(22px,4vw,38px)}
+.crimi-band h2{font-size:clamp(30px,4vw,43px)}
+.crimi-band p{color:#d0d0e0;font-size:14px}
+.role-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.role{padding:12px;border-radius:8px;background:#08081166;border:1px solid #ffffff18;font-size:12px;color:#e6e6f2}
+.role b{display:block;color:var(--cyan);font-size:11px;margin-bottom:4px}
+.tagline{padding:13px 16px;border-left:3px solid var(--cyan);background:#4ce9ff0b;color:#d8e8ef;font-size:13px;margin-top:17px}
+.scenario{display:flex;flex-direction:column;min-height:100%}
+.scenario .kind{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-weight:900;color:var(--purple)}
+.scenario h3{margin:9px 0}
+.scenario ul{padding-left:18px;margin:12px 0 0;color:#c1c1d1;font-size:12px}
+.scenario li{margin:5px 0}
+.rule{display:flex;gap:13px;align-items:flex-start;padding:15px 0;border-bottom:1px solid #ffffff17}
+.rule:last-child{border:0}
+.rule-num{flex:0 0 30px;width:30px;height:30px;border:1px solid #4ce9ff66;border-radius:8px;display:grid;place-items:center;color:var(--cyan);font-size:12px;font-weight:900}
+.rule b{display:block;font-size:14px;margin-bottom:3px}
+.rule span{display:block;color:var(--muted);font-size:12px}
+.guide-split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.guide-panel{border-radius:13px;background:#11111e;border:1px solid #ffffff1c;padding:22px}
+.guide-panel h3{font-size:19px;margin:0 0 10px}
+.guide-panel ul{padding-left:19px;margin:0;color:#c6c6d6;font-size:13px}
+.guide-panel li{margin:8px 0}
+.do-not{border-color:#ff627855;background:linear-gradient(145deg,#25141e,#11111e)}
+.do-not h3{color:#ff9aa8}
+.support{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.support-card{padding:20px;border-radius:12px;background:#11111e;border:1px solid #ffffff1b}
+.support-card .number{font-size:30px;font-weight:950;letter-spacing:-.04em;color:var(--cyan)}
+.support-card h3{font-size:15px;margin:3px 0 7px}
+.support-card p{color:var(--muted);font-size:12px;margin:0 0 12px}
+.support-card a{font-size:12px;font-weight:800}
+.emergency{border-color:#ff627866;background:#29141d}
+.emergency .number{color:#ff8495}
+.alert-band{background:#35131f;border:1px solid #ff627866;border-radius:12px;padding:17px;color:#ffe1e6;font-size:13px;margin-top:16px}
+details{border:1px solid #ffffff1b;background:#121220;border-radius:10px;padding:15px 17px}
+details+details{margin-top:9px}
+summary{cursor:pointer;font-size:13px;font-weight:800;color:#f3f3ff}
+details p{font-size:12px;color:var(--muted);margin:12px 0 0}
+.source-list{display:flex;flex-wrap:wrap;gap:9px}
+.source-list a{display:inline-flex;border:1px solid #ffffff20;padding:9px 11px;border-radius:8px;color:#c7c7d9;text-decoration:none;font-size:10px}
+.source-list a:hover{border-color:var(--cyan);color:var(--cyan)}
+footer{padding:38px 0 45px;border-top:1px solid var(--line);margin-top:35px}
+.footer-grid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer p{color:#88889f;font-size:11px;max-width:600px;margin:8px 0}
+.footer-brand{font-size:11px;letter-spacing:.13em;font-weight:900;color:#fff}
+.print{background:transparent;border:1px solid #ffffff35;color:#d6d6e7;border-radius:7px;padding:9px 12px;font-size:11px;cursor:pointer}
+.print:hover{border-color:var(--cyan);color:var(--cyan)}
+@media(max-width:760px){
+ .hero-grid{grid-template-columns:1fr}.hero{padding:54px 0 35px}.hero-art{min-height:270px}.orbit{width:250px}
+ .grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .crimi-band{grid-template-columns:1fr}.navlinks a:not(.nav-cta){display:none}
+}
+@media(max-width:540px){
+ .wrap{width:calc(100% - 26px)}.grid.two,.grid.three,.guide-split,.support{grid-template-columns:1fr}
+ .hero-actions .btn{width:100%}.role-list{grid-template-columns:1fr 1fr}
+ h1{font-size:52px}.hero-art{min-height:245px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+@media print{
+ body{background:#fff!important;color:#111!important}
+ body:before,header,.hero-art,.hero-actions,.print{display:none!important}
+ .wrap{width:100%}.hero{padding:20px 0}.card,.guide-panel,.support-card,.crimi-band,details{background:#fff!important;color:#111!important;border:1px solid #aaa;break-inside:avoid}
+ h1,h2,h3,.hero-lead,.hero-sub,.intro,.card p,.guide-panel ul,.support-card p,details p,.role{color:#111!important}
+ section{padding:20px 0}.support-card a,.source-list a{color:#111!important}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap nav">
+  <a class="logo" href="#inicio"><span class="logo-mark">⌁</span><span>DESPUÉS DEL CLIC <span style="color:var(--cyan)">/</span> GUÍA DIGITAL</span></a>
+  <nav class="navlinks" aria-label="Navegación principal">
+   <a href="#alertas">Señales</a><a href="#prevencion">Prevención</a><a href="#familias">Familias</a><a href="#ayuda" class="nav-cta">Pedir ayuda</a>
+  </nav>
+ </div>
+</header>
+
+<main id="inicio">
+ <section class="hero wrap">
+  <div class="hero-grid">
+   <div>
+    <div class="eyebrow"><span class="pip"></span> MATERIAL DE PREVENCIÓN · CRIMINOLOGÍA Y SEGURIDAD</div>
+    <h1>CAÍSTE.<br><span class="grad">¿Y AHORA?</span></h1>
+    <p class="hero-lead">No en una trampa. En cuenta de algo: <strong>en internet, saber cuidarte también es parte de tu seguridad.</strong></p>
+    <p class="hero-sub">Esta guía es para vos, tus amigos y tu familia. Volvé cuando lo necesites, compartila y usala para reconocer riesgos antes de que se conviertan en un problema.</p>
+    <div class="hero-actions">
+     <a class="btn btn-primary" href="#alertas">EMPEZAR A INVESTIGAR <span aria-hidden="true">→</span></a>
+     <a class="btn btn-secondary" href="#ayuda">NECESITO ORIENTACIÓN</a>
+    </div>
+   </div>
+   <div class="hero-art" aria-hidden="true">
+    <span class="float one">IDENTIDAD DIGITAL</span><span class="float two">RIESGO / DETECCIÓN</span><span class="float three">PREVENCIÓN ACTIVA</span>
+    <div class="orbit"><div class="core"><div><b>?</b><span>ANTES DE HACER CLIC</span></div></div></div>
+   </div>
+  </div>
+ </section>
+
+ <div class="wrap">
+  <div class="note"><span class="symbol">ⓘ</span><p><strong>Primero, tranquilidad:</strong> esta página es informativa. No te pide registrarte, no solicita contraseñas ni datos personales y no accede a tus redes. No tenés que contar acá nada que te haya pasado.</p></div>
+ </div>
+
+ <section id="mirada">
+  <div class="wrap">
+   <div class="crimi-band">
+    <div>
+     <div class="label">¿QUÉ TIENE QUE VER ESTO CON LA CARRERA?</div>
+     <h2>La seguridad también se construye <span class="accent">antes del delito.</span></h2>
+     <p>La Criminología y Seguridad estudia el delito y las violencias, sus contextos, las víctimas, las conductas y las respuestas sociales e institucionales. No se trata solamente de descubrir quién hizo algo: también importa comprender cómo se producen los riesgos y cómo prevenirlos.</p>
+    </div>
+    <div>
+     <div class="role-list">
+      <div class="role"><b>INVESTIGAR</b>Analizar hechos, patrones, contextos y evidencias.</div>
+      <div class="role"><b>PREVENIR</b>Reconocer oportunidades de riesgo y diseñar acciones de cuidado.</div>
+      <div class="role"><b>PROTEGER</b>Promover entornos más seguros para personas y comunidades.</div>
+      <div class="role"><b>ACOMPAÑAR</b>Orientar respuestas que eviten la revictimización y articulen ayuda.</div>
+     </div>
+     <div class="tagline">En el mundo digital, la mirada criminológica ayuda a preguntar: ¿qué pasó?, ¿cómo pudo ocurrir?, ¿qué señales se ignoraron?, ¿cómo reducimos el riesgo y protegemos a las personas?</div>
+    </div>
+   </div>
+   <p class="hero-sub" style="margin:14px 2px 0">Es un campo interdisciplinario: puede trabajar junto con profesionales de ciberseguridad, derecho, psicología, educación, trabajo social y organismos de protección y justicia. No es sinónimo de ser hacker ni reemplaza la tarea de fiscales o fuerzas de seguridad.</p>
+  </div>
+ </section>
+
+ <section id="alertas">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">01 / DETECCIÓN</div>
+    <h2>Las señales no siempre hacen ruido.</h2>
+    <p class="intro">A veces el engaño llega como un mensaje normal, un perfil conocido, un premio o alguien que parece entenderte. Mirá qué cosas deberían hacerte frenar.</p>
+   </div>
+   <div class="grid three">
+    <article class="card scenario"><div class="icon">↗</div><div class="kind">01 · ENLACES Y CUENTAS</div><h3>“Tu cuenta será suspendida”</h3><p>Un mensaje urgente te pide entrar a un enlace para evitar perder tu cuenta o reclamar un premio.</p><ul><li>Direcciones web raras o con errores.</li><li>Te piden contraseña o código de verificación.</li><li>Te apuran para que no puedas comprobarlo.</li></ul></article>
+    <article class="card scenario"><div class="icon">◉</div><div class="kind">02 · SUPLANTACIÓN</div><h3>“Soy tu amigo, cambié de cuenta”</h3><p>Alguien copia una foto o un nombre conocido y te escribe para pedir dinero, códigos o ayuda urgente.</p><ul><li>Confirmá por otro medio.</li><li>No transfieras por presión.</li><li>Una foto de perfil no prueba identidad.</li></ul></article>
+    <article class="card scenario"><div class="icon">⌁</div><div class="kind">03 · VÍNCULOS EN LÍNEA</div><h3>“No le cuentes a nadie”</h3><p>Una persona que conociste online busca aislarte, ganar confianza rápido o llevar la conversación a un lugar secreto.</p><ul><li>Te pide datos, fotos o videollamadas íntimas.</li><li>Insiste aunque digas que no.</li><li>Te amenaza o te hace sentir culpable.</li></ul></article>
+    <article class="card scenario"><div class="icon">▧</div><div class="kind">04 · CIBERACOSO</div><h3>“Era solo una broma”</h3><p>Hostigamiento, amenazas, humillación o exclusión que se repiten mediante chats, redes o juegos.</p><ul><li>Guardar mensajes y fechas.</li><li>No responder con más agresión.</li><li>Buscar apoyo de alguien adulto de confianza.</li></ul></article>
+    <article class="card scenario"><div class="icon">!</div><div class="kind">05 · EXTORSIÓN DIGITAL</div><h3>“Hacé lo que te digo o lo publico”</h3><p>Alguien amenaza con divulgar conversaciones, datos o imágenes para conseguir algo.</p><ul><li>No estás obligado a obedecer.</li><li>No pagues ni envíes más contenido.</li><li>Pedí ayuda: no lo enfrentes solo/a.</li></ul></article>
+    <article class="card scenario"><div class="icon">⌕</div><div class="kind">06 · PRIVACIDAD</div><h3>“¿Cómo sabe dónde estoy?”</h3><p>Una publicación puede revelar escuela, horarios, ubicación, uniforme, rutinas o datos familiares.</p><ul><li>Revisá quién ve tus historias.</li><li>Desactivá ubicación cuando no haga falta.</li><li>Pensá antes de publicar datos de rutina.</li></ul></article>
+   </div>
+  </div>
+ </section>
+
+ <section id="prevencion">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">02 / PREVENCIÓN PERSONAL</div>
+    <h2>Tu cuenta. Tus reglas. Tu seguridad.</h2>
+    <p class="intro">No necesitás saber de informática para cuidarte. Empezá por estos hábitos simples y revisalos cada tanto.</p>
+   </div>
+   <div class="grid two">
+    <div class="card">
+     <div class="smalltag">CUENTA Y CONTRASEÑAS</div>
+     <div class="rule"><div class="rule-num">01</div><div><b>Usá contraseñas diferentes</b><span>Que sean largas y difíciles de adivinar. No uses la misma clave para Instagram, correo y juegos.</span></div></div>
+     <div class="rule"><div class="rule-num">02</div><div><b>Activá la verificación en dos pasos</b><span>Agrega una segunda barrera si alguien consigue tu contraseña. Nunca compartas códigos de acceso.</span></div></div>
+     <div class="rule"><div class="rule-num">03</div><div><b>Revisá dónde está abierta tu cuenta</b><span>Consultá la actividad de inicio de sesión y cerrá sesiones que no reconozcas.</span></div></div>
+     <div class="rule"><div class="rule-num">04</div><div><b>Protegé también tu correo</b><span>Es clave para recuperar redes. Activá medidas de seguridad y mantené actualizados los datos de recuperación.</span></div></div>
+    </div>
+    <div class="card">
+     <div class="smalltag">PUBLICACIONES Y CONTACTOS</div>
+     <div class="rule"><div class="rule-num">05</div><div><b>Configurá tu privacidad</b><span>Revisá quién puede ver tus publicaciones, historias, etiquetas y lista de seguidores.</span></div></div>
+     <div class="rule"><div class="rule-num">06</div><div><b>Verificá antes de tocar</b><span>Entrá a la app o web oficial por tu cuenta. No uses enlaces inesperados para iniciar sesión.</span></div></div>
+     <div class="rule"><div class="rule-num">07</div><div><b>No compartas códigos ni datos</b><span>Ni por mensaje, llamada, juego o supuesto sorteo. Nadie necesita tu código para “verificarte”.</span></div></div>
+     <div class="rule"><div class="rule-num">08</div><div><b>Pedí permiso antes de publicar</b><span>Tu imagen y la de los demás merecen respeto. No reenvíes material privado o íntimo.</span></div></div>
+    </div>
+   </div>
+   <div class="tagline"><strong>Regla de oro:</strong> si un mensaje te apura, te asusta, te ofrece algo increíble o te pide secreto, frená. Verificá por un canal oficial y hablalo con alguien de confianza.</div>
+  </div>
+ </section>
+
+ <section id="si-pasa">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">03 / RESPUESTA</div>
+    <h2>¿Y si ya pasó?</h2>
+    <p class="intro">No te culpes ni te quedes solo/a. Lo importante es actuar con calma, preservar la información y conseguir acompañamiento.</p>
+   </div>
+   <div class="guide-split">
+    <div class="guide-panel">
+     <h3>Si abriste un enlace o perdiste una cuenta</h3>
+     <ul>
+      <li>No ingreses más datos en esa página ni compartas códigos.</li>
+      <li>Desde la aplicación o sitio oficial, cambiá la contraseña y revisá las sesiones abiertas.</li>
+      <li>Activá la verificación en dos pasos y protegé también tu correo.</li>
+      <li>Si usaron tu cuenta para escribir a tus contactos, avisales por otro medio.</li>
+      <li>Si compartiste datos bancarios o hiciste una transferencia, contactá enseguida a tu banco o billetera desde sus canales oficiales.</li>
+     </ul>
+    </div>
+    <div class="guide-panel">
+     <h3>Si hay acoso, amenazas o ciberbullying</h3>
+     <ul>
+      <li>Contáselo a una persona adulta de confianza. No tenés que resolverlo solo/a.</li>
+      <li>Conservá datos útiles: usuario, enlace del perfil, fechas, mensajes y capturas de pantalla.</li>
+      <li>No respondas con amenazas ni reenvíes el contenido para “mostrar lo que pasó”.</li>
+      <li>En ciberacoso, pedí ayuda para reportar y bloquear de forma segura.</li>
+      <li>Si hay amenazas o peligro inmediato, buscá ayuda urgente.</li>
+     </ul>
+    </div>
+    <div class="guide-panel do-not">
+     <h3>Si sospechás grooming</h3>
+     <ul>
+      <li>Escuchá y pedí ayuda a un adulto de confianza. La responsabilidad es de quien manipula o acosa, nunca de la víctima.</li>
+      <li>No borres conversaciones ni datos del perfil. Guardá usuario, enlaces, fechas y mensajes.</li>
+      <li>No confrontes al sospechoso, no te hagas pasar por otra persona ni intentes investigarlo.</li>
+      <li>Antes de bloquear o reportar el perfil, buscá orientación para no perder información útil para la investigación.</li>
+      <li>Contactá la Línea 137 o 102 y seguí las indicaciones de los equipos especializados.</li>
+     </ul>
+    </div>
+    <div class="guide-panel do-not">
+     <h3>Si amenazan con difundir imágenes íntimas</h3>
+     <ul>
+      <li>No envíes más imágenes ni pagues para que no las publiquen: eso no garantiza que se detenga la amenaza.</li>
+      <li>No reenvíes, publiques ni muestres las imágenes. No tenés que exponerlas para pedir ayuda.</li>
+      <li>Conservá información sobre la cuenta, los mensajes, las amenazas y los enlaces, sin replicar el material íntimo.</li>
+      <li>Buscá inmediatamente a una persona adulta de confianza y orientación especializada.</li>
+      <li>No es tu culpa. Tenés derecho a recibir protección y acompañamiento.</li>
+     </ul>
+    </div>
+   </div>
+   <div class="alert-band"><strong>Importante:</strong> no borres evidencia, no amenaces ni intentes hacer tu propia investigación. En situaciones de grooming, las recomendaciones oficiales indican preservar los datos y consultar a equipos especializados antes de bloquear o reportar al perfil. <a href="https://www.argentina.gob.ar/justicia/convosenlaweb/denuncia/consejos" target="_blank" rel="noopener">Leé las recomendaciones oficiales</a>.</div>
+  </div>
+ </section>
+
+ <section id="familias">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">04 / PREVENCIÓN EN CASA</div>
+    <h2>Para madres, padres y personas adultas.</h2>
+    <p class="intro">Acompañar no es controlar cada movimiento. Es construir confianza para que un chico o una chica pueda pedir ayuda antes de que el problema crezca.</p>
+   </div>
+   <div class="grid three">
+    <article class="card"><div class="icon">♡</div><h3>Que sepan que pueden contarlo</h3><p>Escuchá sin retar, ridiculizar ni culpar. Evitá respuestas como “¿por qué aceptaste?” o “te lo dije”. Agradecé que lo hayan contado.</p></article>
+    <article class="card"><div class="icon">⌂</div><h3>Acuerdos, no amenazas</h3><p>Conversen sobre privacidad, horarios, juegos, contactos y compras. Las reglas claras funcionan mejor cuando se construyen juntos.</p></article>
+    <article class="card"><div class="icon">◉</div><h3>Conocer sin invadir</h3><p>Preguntá qué aplicaciones usan, qué grupos frecuentan y qué situaciones les incomodan. Mostrá interés sin convertir cada charla en un interrogatorio.</p></article>
+    <article class="card"><div class="icon">▣</div><h3>Revisar la privacidad en familia</h3><p>Configuren juntos perfiles, permisos, ubicación, cámara, micrófono, etiquetas y controles disponibles según edad y plataforma.</p></article>
+    <article class="card"><div class="icon">↗</div><h3>Dar el ejemplo</h3><p>No publiques fotos, ubicaciones, uniformes ni rutinas de niñas, niños y adolescentes sin considerar su privacidad y pedir su opinión.</p></article>
+    <article class="card"><div class="icon">✚</div><h3>Tener una red de apoyo</h3><p>Identifiquen de antemano a qué adulto, escuela, servicio de orientación o autoridad pueden acudir si algo sucede.</p></article>
+   </div>
+   <div class="tagline">Un dispositivo se puede reemplazar. La confianza, la intimidad y el bienestar de un chico o una chica necesitan cuidado. No respondas quitándole el teléfono como primera reacción: priorizá escuchar, proteger y buscar ayuda.</div>
+  </div>
+ </section>
+
+ <section id="ayuda">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">05 / RED DE AYUDA · ARGENTINA</div>
+    <h2>No tenés que resolverlo a solas.</h2>
+    <p class="intro">Estos canales oficiales pueden orientar a adolescentes, familias y personas adultas referentes. Elegí el que corresponda a la situación.</p>
+   </div>
+   <div class="support">
+    <article class="support-card">
+     <div class="number">102</div><h3>Derechos de niñas, niños y adolescentes</h3>
+     <p>Servicio gratuito y confidencial de escucha, orientación y acompañamiento. También pueden llamar familiares, docentes y otras personas adultas. No es una línea de emergencias.</p>
+     <a href="https://www.argentina.gob.ar/capital-humano/familia/ninez-y-familia/linea-102" target="_blank" rel="noopener">Información oficial de Línea 102 ↗</a>
+    </article>
+    <article class="support-card">
+     <div class="number">137</div><h3>Grooming y explotación sexual</h3>
+     <p>Ante sospecha de grooming o explotación sexual de niñas, niños o adolescentes: llamá a la Línea 137, opción 1, o escribí por WhatsApp al 11-3133-1000 para recibir orientación y acompañamiento.</p>
+     <a href="https://www.argentina.gob.ar/node/457643" target="_blank" rel="noopener">Información oficial y vías de ayuda ↗</a><br>
+     <a href="https://wa.me/5491131331000" target="_blank" rel="noopener">Abrir WhatsApp de orientación ↗</a>
+    </article>
+    <article class="support-card">
+     <div class="number">UFECI</div><h3>Unidad Fiscal Especializada en Ciberdelincuencia</h3>
+     <p>Para orientación y denuncias sobre grooming y otros delitos informáticos. Correo: denunciasufeci@mpf.gov.ar. Teléfono: (011) 5071-0040.</p>
+     <a href="https://www.mpf.gob.ar/ufeci/" target="_blank" rel="noopener">Sitio oficial de UFECI ↗</a><br>
+     <a href="mailto:denunciasufeci@mpf.gov.ar">Enviar correo ↗</a>
+    </article>
+    <article class="support-card">
+     <div class="number">FISCALÍA</div><h3>Denunciar un delito informático</h3>
+     <p>También podés acudir a la fiscalía o dependencia receptora de denuncias que corresponda a tu domicilio. La denuncia es gratuita.</p>
+     <a href="https://www.argentina.gob.ar/servicio/denunciar-un-delito-informatico" target="_blank" rel="noopener">Cómo realizar una denuncia ↗</a>
+    </article>
+   </div>
+   <div class="support" style="margin-top:13px">
+    <article class="support-card emergency">
+     <div class="number">911</div><h3>Emergencia o peligro inmediato</h3>
+     <p>Si alguien está en peligro ahora, hay una amenaza inmediata o necesitás asistencia urgente, llamá al 911 o al servicio local de emergencias.</p>
+    </article>
+    <article class="support-card">
+     <div class="number">MAPA</div><h3>Encontrar una fiscalía</h3>
+     <p>Buscá la sede del Ministerio Público Fiscal más cercana para consultar dónde realizar una denuncia.</p>
+     <a href="https://www.mpf.gob.ar/mapa-fiscalias/" target="_blank" rel="noopener">Consultar mapa de fiscalías ↗</a>
+    </article>
+   </div>
+   <div class="alert-band"><strong>Si sos menor de edad:</strong> podés empezar por una persona adulta en quien confíes: familiar, docente, preceptor/a, orientador/a o profesional de salud. Si la primera persona no te escucha, buscá otra. Merecés que te tomen en serio.</div>
+  </div>
+ </section>
+
+ <section id="para-pensar">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">06 / TU RADAR DIGITAL</div>
+    <h2>Antes de compartir, frená un segundo.</h2>
+    <p class="intro">Tres preguntas rápidas para llevarte de esta guía.</p>
+   </div>
+   <div class="grid three">
+    <article class="card"><div class="smalltag">PREGUNTA 01</div><h3>¿Quién está del otro lado?</h3><p>¿Verifiqué que el perfil, mensaje o pedido sea auténtico por otro canal?</p></article>
+    <article class="card"><div class="smalltag">PREGUNTA 02</div><h3>¿Qué me están pidiendo?</h3><p>¿Quieren mi contraseña, un código, dinero, una imagen o que mantenga algo en secreto?</p></article>
+    <article class="card"><div class="smalltag">PREGUNTA 03</div><h3>¿Con quién puedo hablar?</h3><p>¿Sé qué persona adulta o servicio puede ayudarme si algo me incomoda o me pone en riesgo?</p></article>
+   </div>
+   <div class="tagline"><strong>Quedate con esto:</strong> pedir ayuda no es meterte en problemas. Es una forma de cuidarte. No hace falta tener todas las respuestas para hablar con alguien.</div>
+  </div>
+ </section>
+
+ <section id="fuentes">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">PARA SEGUIR INFORMÁNDOTE</div>
+    <h2>Fuentes y recursos confiables.</h2>
+    <p class="intro">Material oficial para profundizar, conversar en casa o trabajar estos temas en la escuela.</p>
+   </div>
+   <div class="source-list">
+    <a href="https://www.argentina.gob.ar/node/516752" target="_blank" rel="noopener">Privacidad, grooming y ciberbullying · Argentina.gob.ar ↗</a>
+    <a href="https://www.argentina.gob.ar/justicia/convosenlaweb/situaciones/estrategias-para-prevenir-el-grooming" target="_blank" rel="noopener">Estrategias para prevenir el grooming ↗</a>
+    <a href="https://www.argentina.gob.ar/justicia/convosenlaweb/denuncia/consejos" target="_blank" rel="noopener">Cómo conservar pruebas y denunciar ↗</a>
+    <a href="https://www.argentina.gob.ar/normativa/nacional/ley-27590-345231/texto" target="_blank" rel="noopener">Ley 27.590 · Ley Mica Ortega ↗</a>
+    <a href="https://about.fb.com/es/news/2026/10/la-policia-nacional-ayuda-a-los-usuarios-a-proteger-su-cuenta-de-instagram-e-identificar-las-estafas-online-mas-comunes/" target="_blank" rel="noopener">Consejos de seguridad para Instagram · Meta ↗</a>
+   </div>
+  </div>
+ </section>
+</main>
+
+<footer>
+ <div class="wrap footer-grid">
+  <div>
+   <div class="footer-brand">DESPUÉS DEL CLIC <span style="color:var(--cyan)">/</span> CRIMINOLOGÍA Y SEGURIDAD</div>
+   <p>Recurso educativo de prevención digital para adolescentes, familias y comunidad educativa. Información general: no reemplaza asesoramiento profesional, asistencia especializada ni una denuncia ante las autoridades.</p>
+   <p>Canales y contenidos consultados en noviembre de 2026. Los servicios pueden actualizar sus modalidades: verificá siempre la información en los sitios oficiales enlazados.</p>
+   <p>Esta página no recopila información personal ni ofrece un canal para relatar situaciones particulares.</p>
+  </div>
+  <div><button class="print" onclick="window.print()">↗ Guardar o imprimir esta guía</button></div>
+ </div>
+</footer>
+</body>
+</html>
