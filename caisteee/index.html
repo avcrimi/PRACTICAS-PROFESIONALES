@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080811">
+<meta name="description" content="Una simulación educativa sobre engaños, enlaces falsos y seguridad en Instagram.">
+<title>CAISTEEEE // Caso 01</title>
+<style>
+:root{--bg:#080811;--panel:#10101d;--purple:#a855f7;--cyan:#35e7ff;--white:#f6f7ff;--muted:#a6a6bd;--red:#ff4d64;--line:rgba(168,85,247,.28)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--white);background:radial-gradient(ellipse at 15% 8%,rgba(115,42,190,.22),transparent 34%),radial-gradient(ellipse at 88% 32%,rgba(0,202,235,.12),transparent 30%),var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.17;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 85%)}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.014) 4px);opacity:.3}
+.wrap{position:relative;z-index:1;width:min(100% - 36px,900px);margin:auto;padding:24px 0 42px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:17px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800}
+.mark{width:27px;height:27px;border:1px solid var(--cyan);display:grid;place-items:center;color:var(--cyan);font-size:14px;box-shadow:0 0 18px #35e7ff33}
+.status{display:inline-flex;align-items:center;gap:8px;color:var(--cyan);white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(.75)}}
+.hero{padding:clamp(48px,10vw,90px) 0 44px;text-align:center}
+.kicker{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);font-weight:800}
+h1{margin:17px 0 12px;font-size:clamp(54px,13vw,112px);line-height:.9;letter-spacing:-.075em;font-weight:950;text-shadow:0 0 16px #a855f766,0 0 48px #a855f733}
+h1 span{color:var(--purple)}
+.subtitle{max-width:630px;margin:22px auto 0;color:#d5d5e6;font-size:clamp(16px,3vw,20px);line-height:1.55}
+.tag{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,77,100,.48);background:#ff4d6410;color:#ff8795;padding:9px 12px;margin-top:25px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.panel{position:relative;margin:0 auto 22px;padding:clamp(20px,5vw,34px);background:linear-gradient(145deg,rgba(22,20,39,.96),rgba(11,13,25,.96));border:1px solid rgba(53,231,255,.28);box-shadow:0 18px 70px #0008,0 0 36px #a855f71a;border-radius:18px;overflow:hidden}
+.panel:before{content:"";position:absolute;left:0;top:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--purple),var(--cyan),transparent)}
+.panel-head{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:22px;color:var(--muted);font-size:10px;letter-spacing:.15em;text-transform:uppercase}
+.panel-head strong{color:var(--cyan)}
+.reveal-title{font-size:clamp(25px,5vw,38px);line-height:1.12;letter-spacing:-.035em;margin:0 0 13px}
+.reveal-title em{font-style:normal;color:var(--cyan)}
+.lead{color:#c7c7d8;line-height:1.65;margin:0;max-width:720px}
+.btn{appearance:none;border:0;cursor:pointer;margin-top:25px;padding:15px 20px;background:linear-gradient(100deg,#8b36df,#4e43c9);color:white;border-radius:8px;font-weight:900;letter-spacing:.1em;font-size:11px;box-shadow:0 0 26px #8b36df55;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 35px #8b36df88}
+.btn:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
+#report{display:none;margin-top:26px}
+#report.show{display:block;animation:enter .5s ease both}
+@keyframes enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.notice{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:10px;background:#35e7ff0d;border:1px solid #35e7ff44;margin-bottom:26px}
+.notice-icon{font-size:21px;color:var(--cyan)}
+.notice strong{display:block;margin-bottom:5px;color:#fff}
+.notice p{margin:0;color:#c7c7d8;line-height:1.55;font-size:14px}
+.section-label{color:var(--purple);font-size:10px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;margin:27px 0 12px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.step{padding:17px 15px;background:#08081199;border:1px solid #ffffff16;border-radius:10px}
+.num{font-size:11px;color:var(--cyan);letter-spacing:.14em;font-weight:900}
+.step h3{font-size:15px;margin:10px 0 7px}
+.step p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}
+.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.check{padding:14px;border:1px solid #ffffff19;border-radius:9px;background:#ffffff05;display:flex;gap:10px;color:#d7d7e6;font-size:13px;line-height:1.45}
+.check b{color:var(--cyan);font-size:16px}
+.alert{margin-top:22px;padding:17px;border-left:3px solid var(--red);background:#ff4d640d;color:#e4dce2;font-size:13px;line-height:1.6}
+.alert strong{color:#ff8795}
+.footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:25px;padding-top:17px;border-top:1px solid var(--line);color:#77778e;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.footer b{color:var(--cyan)}
+@media(max-width:620px){.wrap{width:min(100% - 26px,900px);padding-top:17px}.top{font-size:9px}.steps{grid-template-columns:1fr}.checks{grid-template-columns:1fr}.hero{padding-top:58px}.panel{border-radius:14px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <div class="brand"><span class="mark">⌁</span><span>LAB // CIBERINVESTIGACIÓN</span></div>
+    <div class="status"><span class="dot"></span> SIMULACIÓN ACTIVA</div>
+  </header>
+
+  <section class="hero" aria-labelledby="title">
+    <div class="kicker">CASO 01 &nbsp;·&nbsp; ENLACE NO VERIFICADO</div>
+    <h1 id="title">CAÍSTE<span>EEE.</span></h1>
+    <p class="subtitle">Escaneaste. Abriste. Confiaste.<br>¿Y si ese código te hubiera llevado a una trampa?</p>
+    <div class="tag">⚠ ALERTA DIDÁCTICA · NO ES UN ATAQUE REAL</div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><span>ARCHIVO: INSTAGRAM / INGENIERÍA SOCIAL</span><strong>ESTADO: ANALIZADO</strong></div>
+    <h2 class="reveal-title">Tranqui. <em>No te hackearon.</em></h2>
+    <p class="lead">Esto fue una demostración. No ingresaste a Instagram, no se capturaron datos y nadie obtuvo acceso a tu celular. Pero acabás de experimentar algo importante: muchas estafas empiezan con una acción que parece inofensiva… abrir un enlace.</p>
+    <button class="btn" id="reveal" type="button" aria-expanded="false" aria-controls="report">DESCUBRIR CÓMO FUNCIONA →</button>
+
+    <div id="report">
+      <div class="section-label">01 / RECONSTRUCCIÓN DEL ENGAÑO</div>
+      <div class="steps">
+        <article class="step"><div class="num">PASO 01</div><h3>El anzuelo</h3><p>Un mensaje, sorteo, aviso de suspensión o perfil que parece legítimo despierta curiosidad o urgencia.</p></article>
+        <article class="step"><div class="num">PASO 02</div><h3>El enlace</h3><p>Te dirige a una página falsa que imita Instagram y busca que confíes antes de verificar la dirección.</p></article>
+        <article class="step"><div class="num">PASO 03</div><h3>La trampa</h3><p>Si alguien escribe su contraseña o comparte un código, puede entregar el acceso a su cuenta.</p></article>
+      </div>
+
+      <div class="section-label">02 / DETECTÁ LAS SEÑALES</div>
+      <div class="checks">
+        <div class="check"><b>↗</b><span>Revisá la dirección completa antes de abrir un enlace.</span></div>
+        <div class="check"><b>↗</b><span>Desconfiá de mensajes que meten miedo o apuran una decisión.</span></div>
+        <div class="check"><b>↗</b><span>Nunca ingreses tu contraseña desde un link recibido por mensaje.</span></div>
+        <div class="check"><b>↗</b><span>No compartas códigos de verificación con nadie.</span></div>
+        <div class="check"><b>↗</b><span>Activá la autenticación en dos pasos desde la app oficial.</span></div>
+        <div class="check"><b>↗</b><span>Ante la duda, cerrá el enlace y entrá a Instagram desde su aplicación.</span></div>
+      </div>
+
+      <div class="alert"><strong>REGLA DE ORO:</strong> un logo conocido, una cuenta con muchos seguidores o un QR prolijo no demuestran que un enlace sea seguro. Frená, verificá y recién después decidí.</div>
+      <div class="section-label">03 / FIN DE LA SIMULACIÓN</div>
+      <h2 class="reveal-title">La próxima vez,<br><em>que no te la cuenten.</em></h2>
+      <p class="lead">En internet, pensar dos segundos antes de tocar un enlace puede hacer toda la diferencia.</p>
+    </div>
+  </section>
+
+  <footer class="footer"><span><b>SIMULACIÓN EDUCATIVA</b> · SEGURIDAD DIGITAL</span><span>0 DATOS RECOPILADOS · 0 ACCESOS</span></footer>
+</main>
+<script>
+const button=document.getElementById("reveal");
+const report=document.getElementById("report");
+button.addEventListener("click",()=>{
+  const open=report.classList.toggle("show");
+  button.setAttribute("aria-expanded",String(open));
+  button.textContent=open?"OCULTAR INFORME ↑":"DESCUBRIR CÓMO FUNCIONA →";
+  if(open) report.scrollIntoView({behavior:"smooth",block:"start"});
+});
+</script>
+</body>
+</html>
