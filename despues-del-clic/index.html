@@ -115,6 +115,21 @@ footer p{color:#88889f;font-size:11px;max-width:600px;margin:8px 0}
 .footer-brand{font-size:11px;letter-spacing:.13em;font-weight:900;color:#fff}
 .print{background:transparent;border:1px solid #ffffff35;color:#d6d6e7;border-radius:7px;padding:9px 12px;font-size:11px;cursor:pointer}
 .print:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.quiz-card{background:#11111e;border:1px solid #ffffff20;border-radius:12px;padding:18px}
+.quiz-card h3{font-size:15px;margin:8px 0 13px;line-height:1.4}
+.quiz-choice{display:block;width:100%;text-align:left;background:#090914;border:1px solid #ffffff24;color:#e8e8f2;padding:10px 11px;border-radius:8px;margin:7px 0;font-size:12px;cursor:pointer}
+.quiz-choice:hover,.quiz-choice:focus-visible{border-color:var(--cyan);outline:none}
+.quiz-choice:disabled{cursor:default;opacity:.8}
+.quiz-choice.correct{border-color:var(--green);background:#9be8c21a;color:#c9ffe2}
+.quiz-choice.wrong{border-color:var(--red);background:#ff62781a;color:#ffd4da}
+.quiz-feedback{min-height:54px;margin-top:11px;color:var(--muted);font-size:12px}
+.quiz-feedback strong{color:var(--cyan)}
+.quiz-score{margin-top:15px;padding:13px 15px;border:1px solid #4ce9ff55;background:#4ce9ff0b;border-radius:9px;color:#e4faff;font-size:13px}
+@media(max-width:760px){.quiz{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.quiz{grid-template-columns:1fr}}
+
 @media(max-width:760px){
  .hero-grid{grid-template-columns:1fr}.hero{padding:54px 0 35px}.hero-art{min-height:270px}.orbit{width:250px}
  .grid.three{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -140,7 +155,7 @@ footer p{color:#88889f;font-size:11px;max-width:600px;margin:8px 0}
  <div class="wrap nav">
   <a class="logo" href="#inicio"><span class="logo-mark">⌁</span><span>DESPUÉS DEL CLIC <span style="color:var(--cyan)">/</span> GUÍA DIGITAL</span></a>
   <nav class="navlinks" aria-label="Navegación principal">
-   <a href="#alertas">Señales</a><a href="#prevencion">Prevención</a><a href="#familias">Familias</a><a href="#ayuda" class="nav-cta">Pedir ayuda</a>
+   <a href="#alertas">Señales</a><a href="#desafio">Desafío</a><a href="#prevencion">Prevención</a><a href="#familias">Familias</a><a href="#ayuda" class="nav-cta">Pedir ayuda</a>
   </nav>
  </div>
 </header>
@@ -289,7 +304,45 @@ footer p{color:#88889f;font-size:11px;max-width:600px;margin:8px 0}
   </div>
  </section>
 
- <section id="familias">
+ 
+ <section id="desafio">
+  <div class="wrap">
+   <div class="section-top">
+    <div class="label">03 / DESAFÍO RÁPIDO · 3 SITUACIONES</div>
+    <h2>Poné a prueba tu radar digital.</h2>
+    <p class="intro">Elegí qué harías en cada caso. No hay registro, no se guardan respuestas y nadie puede ver lo que elegís: el desafío se resuelve únicamente en tu dispositivo.</p>
+   </div>
+   <div class="quiz" id="quiz">
+    <article class="quiz-card" data-answer="b">
+     <div class="smalltag">SITUACIÓN 01</div>
+     <h3>Te llega un mensaje: “Tu Instagram se cierra en 10 minutos. Entrá acá”.</h3>
+     <button class="quiz-choice" data-value="a">A. Toco el enlace rápido para que no me cierren la cuenta.</button>
+     <button class="quiz-choice" data-value="b">B. No abro el enlace. Entro a Instagram desde la app y reviso allí.</button>
+     <button class="quiz-choice" data-value="c">C. Le mando mi contraseña a quien escribió para verificar mi identidad.</button>
+     <div class="quiz-feedback" aria-live="polite">¿Qué opción evita actuar bajo presión?</div>
+    </article>
+    <article class="quiz-card" data-answer="c">
+     <div class="smalltag">SITUACIÓN 02</div>
+     <h3>Un conocido te pide por chat el código que te acaba de llegar por SMS.</h3>
+     <button class="quiz-choice" data-value="a">A. Se lo paso: si lo pide, debe necesitarlo.</button>
+     <button class="quiz-choice" data-value="b">B. Lo publico en el grupo para preguntar qué es.</button>
+     <button class="quiz-choice" data-value="c">C. No lo comparto y confirmo con esa persona por otro medio.</button>
+     <div class="quiz-feedback" aria-live="polite">Un código de acceso es personal. ¿Qué harías?</div>
+    </article>
+    <article class="quiz-card" data-answer="a">
+     <div class="smalltag">SITUACIÓN 03</div>
+     <h3>Alguien online te pide fotos íntimas y dice que es “un secreto entre ustedes”.</h3>
+     <button class="quiz-choice" data-value="a">A. No envío nada, busco apoyo adulto y orientación especializada.</button>
+     <button class="quiz-choice" data-value="b">B. Sigo hablando para descubrir quién es por mi cuenta.</button>
+     <button class="quiz-choice" data-value="c">C. Me quedo callado/a porque me da vergüenza.</button>
+     <div class="quiz-feedback" aria-live="polite">No tenés que enfrentar esa situación sin ayuda.</div>
+    </article>
+   </div>
+   <div class="quiz-score" id="quiz-score" aria-live="polite">Completá las tres situaciones para ver tu resultado. Tu respuesta no sale de este dispositivo.</div>
+  </div>
+ </section>
+
+<section id="familias">
   <div class="wrap">
    <div class="section-top">
     <div class="label">04 / PREVENCIÓN EN CASA</div>
@@ -319,12 +372,12 @@ footer p{color:#88889f;font-size:11px;max-width:600px;margin:8px 0}
     <article class="support-card">
      <div class="number">102</div><h3>Derechos de niñas, niños y adolescentes</h3>
      <p>Servicio gratuito y confidencial de escucha, orientación y acompañamiento. También pueden llamar familiares, docentes y otras personas adultas. No es una línea de emergencias.</p>
-     <a href="https://www.argentina.gob.ar/capital-humano/familia/ninez-y-familia/linea-102" target="_blank" rel="noopener">Información oficial de Línea 102 ↗</a>
+     <a href="https://www.argentina.gob.ar/node/198269" target="_blank" rel="noopener">Información oficial de Línea 102 ↗</a>
     </article>
     <article class="support-card">
      <div class="number">137</div><h3>Grooming y explotación sexual</h3>
      <p>Ante sospecha de grooming o explotación sexual de niñas, niños o adolescentes: llamá a la Línea 137, opción 1, o escribí por WhatsApp al 11-3133-1000 para recibir orientación y acompañamiento.</p>
-     <a href="https://www.argentina.gob.ar/node/457643" target="_blank" rel="noopener">Información oficial y vías de ayuda ↗</a><br>
+     <a href="https://www.argentina.gob.ar/justicia/convosenlaweb/situaciones/guia-para-padres-familias-y-docentes-grooming" target="_blank" rel="noopener">Información oficial y vías de ayuda ↗</a><br>
      <a href="https://wa.me/5491131331000" target="_blank" rel="noopener">Abrir WhatsApp de orientación ↗</a>
     </article>
     <article class="support-card">
@@ -399,5 +452,41 @@ footer p{color:#88889f;font-size:11px;max-width:600px;margin:8px 0}
   <div><button class="print" onclick="window.print()">↗ Guardar o imprimir esta guía</button></div>
  </div>
 </footer>
+
+<script>
+(function(){
+ const root=document.getElementById("quiz");
+ if(!root)return;
+ let answered=0,correct=0;
+ const score=document.getElementById("quiz-score");
+ root.querySelectorAll(".quiz-card").forEach(card=>{
+  const expected=card.dataset.answer;
+  const feedback=card.querySelector(".quiz-feedback");
+  card.querySelectorAll(".quiz-choice").forEach(btn=>{
+   btn.addEventListener("click",()=>{
+    if(card.dataset.done==="1")return;
+    card.dataset.done="1";answered++;
+    const right=btn.dataset.value===expected;
+    if(right)correct++;
+    card.querySelectorAll(".quiz-choice").forEach(choice=>{
+     choice.disabled=true;
+     if(choice.dataset.value===expected)choice.classList.add("correct");
+    });
+    if(!right)btn.classList.add("wrong");
+    const explanations={
+      "a":"La opción segura es entrar a Instagram desde su aplicación y revisar las notificaciones allí. No sigas enlaces inesperados.",
+      "b":"Exacto. Los códigos de acceso son personales: confirmá cualquier pedido por otro canal y nunca compartas el código.",
+      "c":"Exacto. No envíes imágenes, no guardes el secreto por miedo y pedí ayuda a una persona adulta y a un servicio especializado."
+    };
+    feedback.innerHTML=(right?"<strong>¡Bien detectado!</strong> ":"<strong>Ojo con esa decisión.</strong> ")+explanations[expected];
+    score.textContent=answered===3
+     ? "RADAR DIGITAL: "+correct+"/3 respuestas correctas. "+(correct===3?"¡Excelente! Tu mejor herramienta sigue siendo frenar, verificar y pedir ayuda.":"Lo importante es aprender: repasá las medidas de prevención y compartí esta guía.")
+     : "Llevás "+answered+" de 3 situaciones. Respuestas correctas: "+correct+".";
+   });
+  });
+ });
+})();
+</script>
+
 </body>
 </html>
